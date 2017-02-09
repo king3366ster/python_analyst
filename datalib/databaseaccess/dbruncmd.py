@@ -5,17 +5,17 @@ import os, sys, pdb
 def runcmd(cmdobj, config = None, cache = None):
     ctype = cmdobj['ctype']
     result = None
-    if ctype == 'loadexcel':
+    if ctype == 'dbloadexcel':
         result = loaddata.loadexcel(cmdobj)
-    elif ctype == 'loadcsv':
+    elif ctype == 'dbloadcsv':
         result = loaddata.loadcsv(cmdobj)
-    elif ctype == 'loadmysql':
+    elif ctype == 'dbloadmysql':
         result = loaddata.loadmysql(cmdobj, config)
-    elif ctype == 'saveexcel':
+    elif ctype == 'dbsaveexcel':
         result = savedata.saveexcel(cmdobj, cache = cache)
-    elif ctype == 'savecsv':
+    elif ctype == 'dbsavecsv':
         result = savedata.savecsv(cmdobj, cache = cache)
-    elif ctype == 'savemysql':
+    elif ctype == 'dbsavemysql':
         result = savedata.savemysql(cmdobj, config = config, cache = cache)
     return result
 

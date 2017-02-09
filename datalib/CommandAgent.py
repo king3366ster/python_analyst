@@ -45,11 +45,11 @@ class CommandAgent(object):
     def runcmd (self, cmd, cache = None):
         cmdobj = self.parsecmd(cmd)
         ctype = cmdobj['ctype']
-        if ctype.find('db'): # databaseaccess类
+        if ctype.find('db') == 0: # databaseaccess类
             result = db.runcmd(cmdobj, config = self.config, cache = cache)
-        elif ctype.find('ds'): # datasingleoperate类
+        elif ctype.find('ds') == 0: # datasingleoperate类
             result = ds.runcmd(cmdobj)
-        elif ctype.find('dm'): # datasingleoperate类
+        elif ctype.find('dm') == 0: # datasingleoperate类
             result = dm.runcmd(cmdobj, cache = cache)
         else:
             return None

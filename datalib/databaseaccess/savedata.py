@@ -3,7 +3,11 @@ import pdb, re
 import pandas as pd
 import openpyxl
 from openpyxl.utils import get_column_letter
-import sqlalchemy
+from sqlalchemy import *
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.dialects.mysql import DOUBLE, TIMESTAMP
+
 
 def checkparams(func):
     def _checkparams(cmdobj, config = None, cache = None):
@@ -87,7 +91,6 @@ def saveexcel (cmdobj, config = None, cache = None):
                 print what
     wb.save(filename = filename)
 
-
 @checkparams
 def savecsv (cmdobj, config = None, cache = None):
     ckeys = cmdobj['ckeys']
@@ -123,17 +126,97 @@ def gen_engine_mysql (config):
         _port = 3306
     mysql_engine = 'mysql://%s:%s@%s:%s/%s?charset=utf8' % (_user, _pwd, _host, _port, _db)
     # print (mysql_engine)
-    return sqlalchemy.create_engine(mysql_engine)
+    return create_engine(mysql_engine)
+
+def create_mysql_table (mysql_engine, data, tb_name = None, unique_key_set = set(), need_datetime = 1):
+    metadata = MetaData()
+    created_at = False
+    updated_at = False
+
+    columns = [tb_name, metadata, Column('id', BIGINT, primary_key = True)]
+    for col_name in data.columns:
+        if col_name == 'id':
+            continue
+        col_type = unicode(data[col_name].dtype)
+        temp_type = String(128)
+        if col_type.find('int') >= 0:
+            temp_type = Integer
+        elif col_type.find('float') >= 0:
+            temp_type = DOUBLE
+        elif col_type.find('datetime') >= 0:
+            temp_type = DateTime
+        else:
+            if re.search(r'id$', col_name):
+                temp_type = BIGINT
+            elif re.search(r'(updated|created)', col_name):
+                temp_type = TIMESTAMP
+            else:
+                temp_type = String(128) 
+
+        if col_name in unique_key_set and len(unique_key_set) == 1:
+            columns.append(Column(col_name, temp_type, unique = True, nullable = False, autoincrement = False)) 
+        elif col_name in unique_key_set:
+            columns.append(Column(col_name, temp_type, nullable = False)) 
+        else:
+            columns.append(Column(col_name, temp_type))
+
+        if col_name == 'created_at':
+            created_at = True
+        if col_name == 'updated_at':
+            updated_at = True
+
+    if need_datetime == True:
+        if updated_at == False:
+            columns.append(Column('updated_at', TIMESTAMP, nullable = False, server_default = text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))) 
+        if created_at == False:
+            columns.append(Column('created_at', TIMESTAMP, nullable = False))
+    if len(unique_key_set) > 1:
+        columns.append(apply(UniqueConstraint, list(unique_key_set)))
+    tb_create = apply(Table, columns)   
+    metadata.create_all(mysql_engine)
 
 @checkparams
 @checkdb
 def savemysql (cmdobj, config = None, cache = None):
     cmdkeys = cmdobj['ckeys']
     src = cmdkeys['src']
-    tar = cmdkeys['tar']
+    data = cache[src]
+    tb_name = cmdkeys['tar']
+
     db = cmdkeys['db']
     mysql_engine = gen_engine_mysql(config[db])
-    print (mysql_engine)
+    DB_Session = sessionmaker(bind = mysql_engine)
+    mysql_session = DB_Session()
+    
+    if 'if_exists' in cmdkeys:
+        if_exists = cmdkeys['if_exists']
+    else:
+        if_exists = 'append'
+
+    if 'need_datetime' in cmdkeys:
+        need_datetime = cmdkeys['need_datetime']
+    else:
+        need_datetime = 1
+
+    if 'unique' in cmdkeys:
+        unique_key = cmdkeys['unique']
+        unique_keys = re.split(r'\s+', unique_key)
+    else:
+        unique_key = None
+        unique_keys = []
+        if if_exists == 'append' or if_exists == 'replace':
+            data.to_sql(tb_name, mysql_engine, if_exists)
+            return data
+        else:
+            raise Exception('Command Error: savemysql if_exists illegal')
+
+    unique_key_set = set()
+    for ukey in unique_keys:
+        unique_key_set.add(ukey)
+
+    tb_count = mysql_session.execute('SHOW TABLES LIKE "%%%s%%"' % tb_name).first()
+    if tb_count is None:
+        create_mysql_table(mysql_engine, data, tb_name = tb_name, unique_key_set = unique_key_set, need_datetime = need_datetime)
 
 
 
