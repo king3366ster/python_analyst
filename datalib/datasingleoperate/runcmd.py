@@ -7,6 +7,8 @@ def runcmd(cmdobj, cache = None):
     result = None
     if ctype == 'dsgroup':
         result = groupdata.groupdata(cmdobj, cache)
+    elif ctype == 'dsresample':
+        result = groupdata.resampledata(cmdobj, cache)
     # elif ctype == 'dmconcat':
     #     result = groupdata.concatdata(cmdobj, cache)
     return result

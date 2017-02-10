@@ -27,14 +27,12 @@ def getbykey (cmdobj, cache = None):
             raise Exception('Runtime Error: %s %s not in %s' % (ctype, bkey, src))
     return bykeys
 
-@checkparams
-def groupdata (cmdobj, cache = None):
+def getcols (cmdobj, data = None):
+    ctype = cmdobj['ctype']
     cmdkeys = cmdobj['ckeys']
     src = cmdkeys['src']
-    data = cache[src].copy(deep = True)
-    bykeys = getbykey(cmdobj, cache)
     if 'cols' not in cmdkeys:
-        raise Exception('Command Error: dsgroup without cols')
+        raise Exception('Command Error: %s without cols' % ctype)
     cols = cmdkeys['cols']
     cols = re.sub(r'\s*\|\s*', '|', cols)
     cols = re.split(r'\s+', cols)
@@ -49,9 +47,79 @@ def groupdata (cmdobj, cache = None):
             method = 'count'
             column = col
         if column not in data:
-            raise Exception('Runtime Error: %s not in %s' % (column, src))
+            raise Exception('Runtime Error: %s %s not in %s' % (ctype, column, src))
         colfunc_dict[column] = method
-    print data
+    return colfunc_dict
+
+def generate_group (method, column, grouped = None, data = None):
+    data_new = None
+    if method == 'count':
+        data_new = grouped[column].count()
+    elif method == 'sum':
+        data_new = grouped[column].sum()
+    elif method == 'mean':
+        data_new = grouped[column].mean()
+    elif method == 'std':
+        data_new = grouped[column].std()
+    elif method == 'min':
+        data_new = grouped[column].min()
+    elif method == 'max':
+        data_new = grouped[column].max()
+    elif method == 'top':
+        data_new = grouped[column].top()
+    elif method == 'last':
+        data_new = grouped[column].last()
+    elif re.search(r'^top\d+$', method):
+        num = int(re.findall(r'\d+', method)[0])
+        num = max(num - 1, 1)
+        data_new = grouped[column].nth(num)
+    return data_new
+
+@checkparams
+def groupdata (cmdobj, cache = None):
+    cmdkeys = cmdobj['ckeys']
+    src = cmdkeys['src']
+    data = cache[src].copy(deep = True)
+    bykeys = getbykey(cmdobj, cache)
+
+    colfunc_dict = getcols(cmdobj, data)
     grouped = data.groupby(bykeys)
-    print grouped['C'].sum().reindex()
-    print colfunc_dict
+    col_data = dict()
+    for column in colfunc_dict:
+        method = colfunc_dict[column]
+        try:
+            series = generate_group(method, column, grouped = grouped, data = data)
+        except Exception as what:
+            raise Exception('Runtime Error: dsgroup column %s cannot apply %s' % (column, method))
+        if series is not None:
+            col_data['%s_%s' % (column, method)] = series
+    data_new = pd.DataFrame(col_data).reset_index()
+    return data_new
+
+@checkparams
+def resampledata (cmdobj, cache = None):
+    cmdkeys = cmdobj['ckeys']
+    src = cmdkeys['src']
+    data = cache[src].copy(deep = True)
+    key_index = getbykey(cmdobj, cache)[0]
+    data[key_index] = pd.to_datetime(data[key_index])
+    data = data.set_index(key_index)
+
+    if 'period' in cmdkeys:
+        period = cmdkeys['period']
+    else:
+        period = 'M' # 1d 2d 
+
+    colfunc_dict = getcols(cmdobj, data)
+    grouped = data.resample(period)
+    col_data = dict()
+    for column in colfunc_dict:
+        method = colfunc_dict[column]
+        try:
+            series = generate_group(method, column, grouped = grouped, data = data)
+        except Exception as what:
+            raise Exception('Runtime Error: %s column %s cannot apply %s' % (ctype, column, method))
+        if series is not None:
+            col_data['%s_%s' % (column, method)] = series
+    data_new = pd.DataFrame(col_data).reset_index()
+    return data_new

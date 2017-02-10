@@ -91,7 +91,20 @@
 * 对数据进行编组统计，类似于数据库的groupby(目前支持select count(*))
 - params
     - by 进行groupby的键值，可多选
-    - cols sum/mean/count
+    - cols <column>|<method>
+        - sum/mean/count/std/min/max/top/last
+        - top(N): top2 top3 top1等同于top
 - examples
     - dsgroup --tar dest --src src1 --by col1 --cols 商机id --cols col1|sum col2|mean 
     - dsgroup --tar dest --src src1 --by col1 col2 --cols col3 col4
+
+#### dsresample
+* 时间序列重采样
+- params
+    - by 进行重采样的列
+    - cols <column>|<method>
+        - sum/mean/count/std/min/max/top/last
+        - top(N): top2 top3 top1等同于top
+    - period 采样周期
+- examples
+    - dsresample --src excdata --tar dst1  --by HIS --cols G|sum H|mean --period 3d

@@ -12,7 +12,8 @@ if __name__ == '__main__':
     cmds = [
         'dbloadexcel --src  %s  --tar excdata' % t_ex,
         'dbloadcsv --src  %s --tar csvdata' % t_cv,
-        'dsgroup --src excdata   --tar dst1  --by A B --cols HIS|mean G|sum C',
+        'dsgroup --src excdata   --tar dst1  --by C --cols J|top2 HIS|first G|last C',
+        'dsresample --src excdata --tar dst1  --by HIS --cols G|sum H|mean --period 3d',
     ]
 
     t = CommandAgent(dbconfig)
