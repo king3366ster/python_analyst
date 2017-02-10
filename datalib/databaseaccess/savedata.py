@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*- 
-import pdb, re
+import pdb, re, datetime
 import pandas as pd
 import openpyxl
 from openpyxl.utils import get_column_letter
@@ -9,8 +9,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.mysql import DOUBLE, TIMESTAMP
 
 
-def checkparams(func):
-    def _checkparams(cmdobj, config = None, cache = None):
+def checkparams (func):
+    def _checkparams (cmdobj, config = None, cache = None):
         ctype = cmdobj['ctype']
         if cache is None or (not isinstance(cache, dict)):
             raise Exception('Runtime Error: %s without cache' % ctype)
@@ -24,8 +24,8 @@ def checkparams(func):
         return func(cmdobj, config = config, cache = cache)
     return _checkparams
 
-def checkdb(func):
-    def _checkdb(cmdobj, config = None, cache = None):
+def checkdb (func):
+    def _checkdb (cmdobj, config = None, cache = None):
         ctype = cmdobj['ctype']
         if config is None:
             raise Exception('Config Error: %s without configs' % ctype)
@@ -181,8 +181,8 @@ def savemysql (cmdobj, config = None, cache = None):
     cmdkeys = cmdobj['ckeys']
     src = cmdkeys['src']
     data = cache[src]
-    tb_name = cmdkeys['tar']
 
+    tb_name = cmdkeys['tar']
     db = cmdkeys['db']
     mysql_engine = gen_engine_mysql(config[db])
     DB_Session = sessionmaker(bind = mysql_engine)
@@ -204,8 +204,10 @@ def savemysql (cmdobj, config = None, cache = None):
     else:
         unique_key = None
         unique_keys = []
-        if if_exists == 'append' or if_exists == 'replace':
-            data.to_sql(tb_name, mysql_engine, if_exists)
+        if if_exists == 'append' or if_exists == 'append_ignore' or if_exists == 'replace':
+            if if_exists == 'append_ignore':
+                if_exists = 'append'
+            data.to_sql(tb_name, mysql_engine, if_exists = if_exists, index = False)
             return data
         else:
             raise Exception('Command Error: savemysql if_exists illegal')
@@ -214,10 +216,89 @@ def savemysql (cmdobj, config = None, cache = None):
     for ukey in unique_keys:
         unique_key_set.add(ukey)
 
+    # create table if not exists
     tb_count = mysql_session.execute('SHOW TABLES LIKE "%%%s%%"' % tb_name).first()
     if tb_count is None:
         create_mysql_table(mysql_engine, data, tb_name = tb_name, unique_key_set = unique_key_set, need_datetime = need_datetime)
 
+    # 获取表结构
+    metadata = MetaData(mysql_engine)
+    tb_model = Table(tb_name, metadata, autoload = True)
+
+    # 此处去除数据库中表不存在的列
+    tb_column_set = set()
+    for col_name in tb_model.c:
+        tb_column_set.add(unicode(col_name).replace('%s.' % tb_name, ''))
+    dataset = data.copy(deep = True)
+    for col_name in dataset.columns:
+        if unicode(col_name) not in tb_column_set:
+            dataset.drop(col_name, axis = 1, inplace = True)
+    # uniquekey与columns交集
+    unique_key_set = unique_key_set & tb_column_set
+    if len(unique_key_set) <= 0:
+        raise Exception('Command Error: savemysql all unique keys not in target table')
+    # 清空数据库，如果选项为replace
+    if if_exists == 'replace':
+        tb_model.delete().execute()
+    key_col = list(unique_key_set)[0]
+
+    dtime = datetime.datetime.now()
+    for value in dataset.iterrows():
+        value_illegal = False
+        insert_value = value[1].to_dict()
+        update_value = dict()
+        for vkey in insert_value:
+            value = insert_value[vkey]
+            if not pd.isnull(value):
+                update_value[vkey] = value
+        for ukey in unique_key_set:
+            if ukey not in update_value:
+                value_illegal = True
+        if value_illegal:
+            print ('Runtime Error: mysql insert with unique key null, ignore')
+            continue
+        
+        if 'updated_at' not in update_value and 'updated_at' in tb_column_set:
+            update_value['updated_at'] = dtime
+
+        if if_exists == 'replace':
+            if 'created_at' not in update_value and 'created_at' in tb_column_set:
+                update_value['created_at'] = dtime
+            try:
+                tb_model.insert(values = update_value).execute()
+            except Exception as what: # 一般为 duplicate entry
+                if unicode(what).find('Duplicate entry') >= 0:
+                    pass
+                else:
+                    print (unicode(what))
+        else:
+            ukey_compare = []
+            for ukey in unique_key_set:
+                tmpval = update_value[ukey]
+                if isinstance(tmpval, unicode) or isinstance(tmpval, str):
+                    tmpval = tmpval.replace('\"', '\\\"')
+                    tmpval = '\"%s\"' % tmpval
+                else:
+                    tmpval = unicode(tmpval)
+                ukey_compare.append('`%s`=%s' % (ukey, tmpval))
+            where_cause = ' AND '.join(ukey_compare)
+            tb_count = mysql_session.execute('SELECT COUNT(1) FROM `%s` WHERE %s' % (tb_name, where_cause)).first()
+            if tb_count[0] > 0: # 记录已存在
+                if if_exists == 'append_ignore':
+                    continue
+                else:
+                    try:
+                        tb_model.update(values = update_value).where(where_cause).execute()
+                    except Exception as what:
+                        print (unicode(what))
+            else:
+                if 'created_at' not in update_value and 'created_at' in tb_column_set:
+                    update_value['created_at'] = dtime
+                try:
+                    tb_model.insert(values = update_value).execute()
+                except Exception as what:
+                    print (unicode(what))
+    mysql_session.close()
 
 
 

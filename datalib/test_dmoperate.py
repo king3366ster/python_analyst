@@ -13,13 +13,12 @@ if __name__ == '__main__':
         'dbloadexcel --src %s --tar excdata' % t_ex,
         'dbloadcsv --src %s --tar csvdata' % t_cv,
         # 'dbloadmysql --db localdb --tar msdata --query select * from tb_new limit 20',
-        # 'dbsaveexcel --src csvdata --tar testdata/testnewdata',
-        # 'dbsavecsv --src msdata',
-        # 'dbsavemysql --db localdb --src csvdata --tar tb_new --unique channel --if_exists replace',
-        'dbsavemysql --db localdb --src excdata --tar tb_new --if_exists append --unique channel --need_datetime true',
+        # 'dmmerge --tar dst1 --src excdata csvdata --join left A B',
+        'dmmerge --tar dst2 --src excdata csvdata --join inner C B',
+        'dmconcat --tar dst1 --src csvdata excdata --join outer --axis 0',
     ]
 
     t = CommandAgent(dbconfig)
     for cmd in cmds:
         t.runcmd(cmd, cache)
-    # print (cache['msdata'])
+    print (cache['dst1'])

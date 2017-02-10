@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*- 
 import os, sys
 import re
-import databaseaccess.dbruncmd as db, datamultioperate.dmruncmd as dm, datasingleoperate.dsruncmd as ds
+import databaseaccess.runcmd as db, datamultioperate.runcmd as dm, datasingleoperate.runcmd as ds
 
 class CommandAgent(object):
     """docstring for CommandAgent"""
@@ -22,6 +22,7 @@ class CommandAgent(object):
             ctype = cmd[: spindex]
             ckeys = {}
             keys = re.findall(r'\s+--[^\-\s]+', cmd)
+            keys = map(lambda x: x.strip(), keys)
             keyset = set()
             keypos = []
             for key in keys:
@@ -34,7 +35,7 @@ class CommandAgent(object):
             for i in range(0, len(keypos) - 1):
                 key = keys[i]
                 value = cmd[keypos[i] + len(key) : keypos[i + 1]].strip()
-                key = key[3:]
+                key = key[2:]
                 ckeys[key] = value
             del keyset
             return {
@@ -48,7 +49,7 @@ class CommandAgent(object):
         if ctype.find('db') == 0: # databaseaccess类
             result = db.runcmd(cmdobj, config = self.config, cache = cache)
         elif ctype.find('ds') == 0: # datasingleoperate类
-            result = ds.runcmd(cmdobj)
+            result = ds.runcmd(cmdobj, cache = cache)
         elif ctype.find('dm') == 0: # datasingleoperate类
             result = dm.runcmd(cmdobj, cache = cache)
         else:

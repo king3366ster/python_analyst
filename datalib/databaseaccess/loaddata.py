@@ -3,8 +3,8 @@ import pdb
 import pandas as pd
 import sqlalchemy
 
-def checkparams(func):
-    def _checkparams(cmdobj, config = None):
+def checkparams (func):
+    def _checkparams (cmdobj, config = None):
         ctype = cmdobj['ctype']
         if 'src' not in cmdobj['ckeys']:
             raise Exception('Command Error: %s without src' % ctype)
@@ -18,7 +18,7 @@ def loadexcel (cmdobj, config = None):
     if 'sheet' in cmdkeys:
         sheet = cmdkeys['sheet']
     else:
-        sheet = None
+        sheet = 'Sheet1'
     return pd.read_excel(src, sheetname = sheet)
 
 @checkparams
