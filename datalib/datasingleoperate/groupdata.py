@@ -59,16 +59,20 @@ def generate_group (method, column, grouped = None, data = None):
         data_new = grouped[column].sum()
     elif method == 'mean':
         data_new = grouped[column].mean()
-    elif method == 'std':
-        data_new = grouped[column].std()
+    elif method == 'median':
+        data_new = grouped[column].median()
     elif method == 'min':
         data_new = grouped[column].min()
     elif method == 'max':
         data_new = grouped[column].max()
     elif method == 'top':
-        data_new = grouped[column].top()
+        data_new = grouped[column].first()
     elif method == 'last':
         data_new = grouped[column].last()
+    elif method == 'std':
+        data_new = grouped[column].std()
+    elif method == 'var':
+        data_new = grouped[column].var()
     elif re.search(r'^top\d+$', method):
         num = int(re.findall(r'\d+', method)[0])
         num = max(num - 1, 1)
@@ -139,11 +143,6 @@ def topndata (cmdobj, cache = None):
     else:
         raise Exception('Command Error: topn without num')
     grouped = data.groupby(bykeys)
-    data_new = None
-    for i in range(num):
-        if data_new is None:
-            data_new = grouped.nth(i)
-        else:
-            data_new = pd.concat([data_new, grouped.nth(i)], join = 'outer', axis = 0)
+    data_new = grouped.head(num)
     data_new.reset_index(inplace = True)
     return data_new

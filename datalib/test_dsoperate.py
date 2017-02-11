@@ -12,9 +12,10 @@ if __name__ == '__main__':
     cmds = [
         'dbloadexcel --src  %s  --tar excdata' % t_ex,
         # 'dbloadcsv --src  %s --tar csvdata' % t_cv,
-        # 'dsgroup --src excdata   --tar dst1  --by C --cols J|top2 HIS|first G|last C',
+        'dsgroup --src excdata   --tar dst1  --by C --cols J|top2 HIS|top G|last C',
         # 'dsresample --src excdata --tar dst1  --by HIS --cols G|sum H|mean --period 3d',
-        'dstopn --src excdata --tar dst1 --by C --num 2',
+        # 'dstopnrows --src excdata --tar dst1 --by C --num 3',
+        'dsfilter --src excdata --tar dst1 --cond (HIS<2017-12-12) & G>1 & C~pc',
     ]
 
     t = CommandAgent(dbconfig)

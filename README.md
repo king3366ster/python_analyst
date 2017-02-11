@@ -66,8 +66,6 @@
 #### dsoperate
 - params
     - order 对列进行排序，以空格分割字段，以空格分隔列名与排序规则
-    - topn 获取top N 行
-    - lastn 获取 last N 行
     - cond 获取条件筛选结果 ~(正则匹配) > < =
     - rename 重命名列名
     - trans 切换列类型/重计算
@@ -92,10 +90,10 @@
 - params
     - by 进行groupby的键值，可多选
     - cols <column>|<method>
-        - sum/mean/count/std/min/max/top/last
+        - sum/mean/count/std/var/min/max/top/last
         - top(N): top2 top3 top1等同于top
 - examples
-    - dsgroup --tar dest --src src1 --by col1 --cols 商机id --cols col1|sum col2|mean 
+    - dsgroup --tar dest --src src1 --by cola --cols col1|sum col2|mean 
     - dsgroup --tar dest --src src1 --by col1 col2 --cols col3 col4
 
 #### dsresample
@@ -108,3 +106,12 @@
     - period 采样周期
 - examples
     - dsresample --src excdata --tar dst1  --by HIS --cols G|sum H|mean --period 3d
+
+#### dstopnrows
+* 获取特定标签顶部的N行
+- params
+    - by 对比维度
+    - num 获取每一对比维度的行数
+- examples
+    - dstopnrows --src excdata --tar dst1 --by C --num 3
+
