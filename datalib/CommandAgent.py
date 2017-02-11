@@ -8,6 +8,38 @@ class CommandAgent(object):
     def __init__(self, config = {}):
         super(CommandAgent, self).__init__()
         self.config = config
+
+    def readcmdlines (self, filename):
+        filepath = self.config['cmdpath'] + filename
+        param_map = dict()
+        commands = []
+        with open(filepath) as f:
+            for cmdline in f.readlines():
+                cmdline = cmdline.strip()
+                if cmdline.find('$set') >= 0:
+                    cmdline = re.sub('^\s*\$set\s+', '', cmdline)
+                    reg = re.search(r'\s+', cmdline)
+                    if reg:
+                        pos = reg.start(0)
+                        key = cmdline[:pos].strip()
+                        val = cmdline[pos:].strip()
+                    else:
+                        key = cmdline
+                        val = ''
+                    if key != '':
+                        param_map[key] = val
+                elif cmdline.find('#') == 0:
+                    continue
+                elif cmdline != '':
+                    if re.search(r'\$\{[^\}\s]+\}', cmdline):
+                        params = re.findall(r'\$\{[^\}\s]+\}', cmdline)
+                        for param in params:
+                            param = re.sub(r'^\$\{', '', param)
+                            param = re.sub(r'\}$', '', param)
+                            if param in param_map:
+                                cmdline = cmdline.replace('${%s}' % param, param_map[param])
+                    commands.append(cmdline)
+        return commands
         
     def parsecmd (self, cmd):
         cmd = unicode(cmd).strip()
