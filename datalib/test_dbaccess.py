@@ -20,6 +20,5 @@ if __name__ == '__main__':
     ]
 
     t = CommandAgent(dbconfig)
-    for cmd in cmds:
-        t.runcmd(cmd, cache)
+    t.runcmds(cmds, cache)
     # print (cache['msdata'])

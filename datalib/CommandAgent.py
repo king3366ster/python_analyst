@@ -8,6 +8,8 @@ class CommandAgent(object):
     def __init__(self, config = {}):
         super(CommandAgent, self).__init__()
         self.config = config
+        if 'cmdpath' not in self.config:
+            self.config['cmdpath'] = ''
 
     def readcmdfile (self, filename, params = {}):
         filepath = self.config['cmdpath'] + filename
@@ -118,10 +120,13 @@ if __name__ == '__main__':
     t_ex = 'testdata/test.xlsx'
     t_cv = 'testdata/test.csv'
     cmds = [
-        'loadexcel --src %s --tar excdata' % t_ex,
-        'loadcsv --src %s --tar csvdata' % t_cv,
+        'dbloadexcel --src %s --tar excdata' % t_ex,
+        'dbloadcsv --src %s --tar csvdata' % t_cv,
+        'dmmerge --tar dst1 --src excdata csvdata --join inner A C B',
+        'dsgroup --tar dst2 --src dst1 --by A --cols B|count'
     ]
     t = CommandAgent()
-    for cmd in cmds:
-        t.runcmd(cmd, cache)
-    print (cache['csvdata'], cache['excdata'])
+    # for cmd in cmds:
+    #     t.runcmd(cmd, cache)
+    t.runcmds(cmds, cache)
+    print (cache['dst1'], cache['dst2'])

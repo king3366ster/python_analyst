@@ -123,3 +123,27 @@ def resampledata (cmdobj, cache = None):
             col_data['%s_%s' % (column, method)] = series
     data_new = pd.DataFrame(col_data).reset_index()
     return data_new
+
+@checkparams
+def topndata (cmdobj, cache = None):
+    cmdkeys = cmdobj['ckeys']
+    src = cmdkeys['src']
+    data = cache[src].copy(deep = True)
+    bykeys = getbykey(cmdobj, cache)
+    if 'num' in cmdkeys:
+        num = cmdkeys['num']
+        if not re.search(r'^\s*\d+\s*$', num):
+            raise Exception('Command Exception: topn num should be int type')
+        else:
+            num = int(num)
+    else:
+        raise Exception('Command Error: topn without num')
+    grouped = data.groupby(bykeys)
+    data_new = None
+    for i in range(num):
+        if data_new is None:
+            data_new = grouped.nth(i)
+        else:
+            data_new = pd.concat([data_new, grouped.nth(i)], join = 'outer', axis = 0)
+    data_new.reset_index(inplace = True)
+    return data_new

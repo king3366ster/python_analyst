@@ -11,12 +11,12 @@ if __name__ == '__main__':
     cache = {}
     cmds = [
         'dbloadexcel --src  %s  --tar excdata' % t_ex,
-        'dbloadcsv --src  %s --tar csvdata' % t_cv,
-        'dsgroup --src excdata   --tar dst1  --by C --cols J|top2 HIS|first G|last C',
-        'dsresample --src excdata --tar dst1  --by HIS --cols G|sum H|mean --period 3d',
+        # 'dbloadcsv --src  %s --tar csvdata' % t_cv,
+        # 'dsgroup --src excdata   --tar dst1  --by C --cols J|top2 HIS|first G|last C',
+        # 'dsresample --src excdata --tar dst1  --by HIS --cols G|sum H|mean --period 3d',
+        'dstopn --src excdata --tar dst1 --by C --num 2',
     ]
 
     t = CommandAgent(dbconfig)
-    for cmd in cmds:
-        t.runcmd(cmd, cache)
+    t.runcmds(cmds, cache)
     print (cache['dst1'])
