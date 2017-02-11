@@ -18,7 +18,7 @@ class CommandAgent(object):
         with open(filepath) as f:
             for cmdline in f.readlines():
                 cmdline = self.parsecmdtext(cmdline, param_map = param_map)
-                if cmdline is not None:
+                if cmdline != '':
                     commands.append(cmdline)
         return commands
 
@@ -28,7 +28,7 @@ class CommandAgent(object):
         cmdlines = rawtext.split('\n')
         for cmdline in cmdlines:
             cmdline = self.parsecmdtext(cmdline, param_map = param_map)
-            if cmdline is not None:
+            if cmdline != '':
                 commands.append(cmdline)
         return commands
 
@@ -46,9 +46,9 @@ class CommandAgent(object):
                 val = ''
             if key != '':
                 param_map[key] = val
-            return None
+            return ''
         elif cmdline.find('#') == 0:
-            return None
+            return ''
         elif cmdline != '':
             if re.search(r'\$\{[^\}\s]+\}', cmdline):
                 params = re.findall(r'\$\{[^\}\s]+\}', cmdline)
