@@ -1,0 +1,5 @@
+$set t_ex test.csv
+$set t_path ../testdata/
+
+dbloadcsv --src ${t_path}${t_ex} --tar excdata
+dsgroup --src excdata --tar dst1  --by C --cols D|count E|sum F|top

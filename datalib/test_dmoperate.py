@@ -1,12 +1,13 @@
 # -*- coding:utf-8 -*- 
-import os, path
+import os, sys, path
+sys.path.append("..")
 import re
 from CommandAgent import CommandAgent
-from testdata.testdb import dbconfig
+from testdata.settings import dbconfig
 
 if __name__ == '__main__':
-    t_ex = 'testdata/test.xlsx'
-    t_cv = 'testdata/test.csv'
+    t_ex = '../testdata/test.xlsx'
+    t_cv = '../testdata/test.csv'
 
     cache = {}
     cmds = [

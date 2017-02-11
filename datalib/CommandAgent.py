@@ -8,31 +8,36 @@ class CommandAgent(object):
     def __init__(self, config = {}):
         super(CommandAgent, self).__init__()
         self.config = config
-        if 'cmdpath' not in self.config:
-            self.config['cmdpath'] = ''
+        if 'execpath' not in self.config:
+            self.config['execpath'] = ''
+        if 'unitdata' not in self.config:
+            self.config['unitdata'] = {}
+
+    def set_unitcmds (self, key, value):
+        self.config['unitdata'][key] = value
 
     def readcmdfile (self, filename, params = {}):
-        filepath = self.config['cmdpath'] + filename
+        filepath = self.config['execpath'] + filename
         param_map = copy.deepcopy(params)
         commands = []
         with open(filepath) as f:
             for cmdline in f.readlines():
-                cmdline = self.parsecmdtext(cmdline, param_map = param_map)
+                cmdline = self.parsetext(cmdline, param_map = param_map)
                 if cmdline != '':
                     commands.append(cmdline)
         return commands
 
-    def readcmdraw (self, rawtext = '', params = {}):
+    def readcmdtext (self, rawtext = '', params = {}):
         param_map = copy.deepcopy(params)
         commands = []
         cmdlines = rawtext.split('\n')
         for cmdline in cmdlines:
-            cmdline = self.parsecmdtext(cmdline, param_map = param_map)
+            cmdline = self.parsetext(cmdline, param_map = param_map)
             if cmdline != '':
                 commands.append(cmdline)
         return commands
 
-    def parsecmdtext (self, cmdline, param_map = {}):
+    def parsetext (self, cmdline, param_map = {}):
         cmdline = cmdline.strip()
         if cmdline.find('$set') >= 0:
             cmdline = re.sub('^\s*\$set\s+', '', cmdline)
@@ -93,6 +98,29 @@ class CommandAgent(object):
                 'ckeys': ckeys,
             }
 
+    # 执行命令单元集合
+    def rununit (self, cmdobj):
+        cmdkeys = cmdobj['ckeys']
+        if 'src' not in cmdkeys:
+            raise Exception('Command Error: duexec without src')
+        if 'tar' not in cmdkeys:
+            raise Exception('Command Error: duexec without tar')
+        src = cmdkeys['src']
+        tar = cmdkeys['tar']
+        if src not in self.config['unitdata']:
+            raise Exception('Runtime Error: duexec src %s has not been set' % src)
+        cmds = self.config['unitdata'][src]
+        cmds = self.readcmdtext(cmds)
+        output = None
+        for cmd in cmds:
+            cobj = self.parsecmd(cmd)
+            if 'tar' in cobj['ckeys']:
+                output = cobj['ckeys']['tar']
+        cache = {}
+        self.runcmds(cmds, cache)
+        result = cache[output]
+        return result
+
     def runcmd (self, cmd, cache = None):
         cmdobj = self.parsecmd(cmd)
         ctype = cmdobj['ctype']
@@ -102,17 +130,17 @@ class CommandAgent(object):
             result = ds.runcmd(cmdobj, cache = cache)
         elif ctype.find('dm') == 0: # datasingleoperate类
             result = dm.runcmd(cmdobj, cache = cache)
+        elif ctype == 'duexec': # dataunitexecute类
+            result = self.rununit(cmdobj)
         else:
             return None
         if 'tar' in cmdobj['ckeys'] and cache is not None:
             cache[cmdobj['ckeys']['tar']] = result
-        return result
 
     def runcmds (self, cmds = [], cache = None):
         if cache is None:
             raise Exception('Runtime Error: cache should not be none')
-        for cmd in cmds:
-            self.runcmd(cmd, cache)
+        [self.runcmd(cmd, cache) for cmd in cmds]
 
 if __name__ == '__main__':
 
@@ -126,7 +154,5 @@ if __name__ == '__main__':
         'dsgroup --tar dst2 --src dst1 --by A --cols B|count'
     ]
     t = CommandAgent()
-    # for cmd in cmds:
-    #     t.runcmd(cmd, cache)
     t.runcmds(cmds, cache)
     print (cache['dst1'], cache['dst2'])
