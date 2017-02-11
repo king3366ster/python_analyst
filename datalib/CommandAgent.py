@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*- 
-import os, sys
-import re
+import os, sys, pdb
+import re, copy
 import databaseaccess.runcmd as db, datamultioperate.runcmd as dm, datasingleoperate.runcmd as ds
 
 class CommandAgent(object):
@@ -9,38 +9,54 @@ class CommandAgent(object):
         super(CommandAgent, self).__init__()
         self.config = config
 
-    def readcmdlines (self, filename):
+    def readcmdfile (self, filename, params = {}):
         filepath = self.config['cmdpath'] + filename
-        param_map = dict()
+        param_map = copy.deepcopy(params)
         commands = []
         with open(filepath) as f:
             for cmdline in f.readlines():
-                cmdline = cmdline.strip()
-                if cmdline.find('$set') >= 0:
-                    cmdline = re.sub('^\s*\$set\s+', '', cmdline)
-                    reg = re.search(r'\s+', cmdline)
-                    if reg:
-                        pos = reg.start(0)
-                        key = cmdline[:pos].strip()
-                        val = cmdline[pos:].strip()
-                    else:
-                        key = cmdline
-                        val = ''
-                    if key != '':
-                        param_map[key] = val
-                elif cmdline.find('#') == 0:
-                    continue
-                elif cmdline != '':
-                    if re.search(r'\$\{[^\}\s]+\}', cmdline):
-                        params = re.findall(r'\$\{[^\}\s]+\}', cmdline)
-                        for param in params:
-                            param = re.sub(r'^\$\{', '', param)
-                            param = re.sub(r'\}$', '', param)
-                            if param in param_map:
-                                cmdline = cmdline.replace('${%s}' % param, param_map[param])
+                cmdline = self.parsecmdtext(cmdline, param_map = param_map)
+                if cmdline is not None:
                     commands.append(cmdline)
         return commands
-        
+
+    def readcmdraw (self, rawtext = '', params = {}):
+        param_map = copy.deepcopy(params)
+        commands = []
+        cmdlines = rawtext.split('\n')
+        for cmdline in cmdlines:
+            cmdline = self.parsecmdtext(cmdline, param_map = param_map)
+            if cmdline is not None:
+                commands.append(cmdline)
+        return commands
+
+    def parsecmdtext (self, cmdline, param_map = {}):
+        cmdline = cmdline.strip()
+        if cmdline.find('$set') >= 0:
+            cmdline = re.sub('^\s*\$set\s+', '', cmdline)
+            reg = re.search(r'\s+', cmdline)
+            if reg:
+                pos = reg.start(0)
+                key = cmdline[:pos].strip()
+                val = cmdline[pos:].strip()
+            else:
+                key = cmdline
+                val = ''
+            if key != '':
+                param_map[key] = val
+            return None
+        elif cmdline.find('#') == 0:
+            return None
+        elif cmdline != '':
+            if re.search(r'\$\{[^\}\s]+\}', cmdline):
+                params = re.findall(r'\$\{[^\}\s]+\}', cmdline)
+                for param in params:
+                    param = re.sub(r'^\$\{', '', param)
+                    param = re.sub(r'\}$', '', param)
+                    if param in param_map:
+                        cmdline = cmdline.replace('${%s}' % param, param_map[param])
+        return cmdline
+
     def parsecmd (self, cmd):
         cmd = unicode(cmd).strip()
         space = re.search(r'\s+', cmd)
@@ -89,6 +105,12 @@ class CommandAgent(object):
         if 'tar' in cmdobj['ckeys'] and cache is not None:
             cache[cmdobj['ckeys']['tar']] = result
         return result
+
+    def runcmds (self, cmds = [], cache = None):
+        if cache is None:
+            raise Exception('Runtime Error: cache should not be none')
+        for cmd in cmds:
+            self.runcmd(cmd, cache)
 
 if __name__ == '__main__':
 
