@@ -1,5 +1,6 @@
 $set t_ex test.xlsx
 $set t_path ../testdata/
 
+duexec --src tu2 --tar dst1
 dbloadexcel --src ${t_path}${t_ex} --tar excdata
 dsgroup --src excdata --tar dst1  --by C --cols J|top2 HIS|first G|last C

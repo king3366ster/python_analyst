@@ -2,6 +2,7 @@
 import os, sys, pdb
 import re, copy
 import databaseaccess.runcmd as db, datamultioperate.runcmd as dm, datasingleoperate.runcmd as ds
+from CommandProcess import CommandProcess
 
 class CommandAgent(object):
     """docstring for CommandAgent"""
@@ -13,7 +14,7 @@ class CommandAgent(object):
         if 'unitdata' not in self.config:
             self.config['unitdata'] = {}
 
-    def set_unitcmds (self, key, value):
+    def set_execunit (self, key, value):
         self.config['unitdata'][key] = value
 
     def readcmdfile (self, filename, params = {}):
@@ -117,7 +118,7 @@ class CommandAgent(object):
             if 'tar' in cobj['ckeys']:
                 output = cobj['ckeys']['tar']
         cache = {}
-        self.runcmds(cmds, cache)
+        self.runcmds(cmds, cache, multiprocess = True)
         result = cache[output]
         return result
 
@@ -135,12 +136,78 @@ class CommandAgent(object):
         else:
             return None
         if 'tar' in cmdobj['ckeys'] and cache is not None:
-            cache[cmdobj['ckeys']['tar']] = result
+            if ctype.find('dbsave') != 0:
+                cache[cmdobj['ckeys']['tar']] = result
 
-    def runcmds (self, cmds = [], cache = None):
+    def runcmds (self, cmds = [], cache = None, multiprocess = False):
+        self.checkloop (cmds) # 检查递归深度
+        # print ('itercount %d' % self.checkloop (cmds))
         if cache is None:
             raise Exception('Runtime Error: cache should not be none')
-        [self.runcmd(cmd, cache) for cmd in cmds]
+        if multiprocess:
+            cmdmap = self.sortcmds(cmds)
+            parallelcmds = cmdmap['parallel']
+            serialcmds = cmdmap['serial']
+            # 多进程执行
+            multiproc = CommandProcess(self.runprocesscmd)
+            cache_new = multiproc.run(parallelcmds)
+            cache.update(cache_new) # 内存引用更新
+            # 单进程串行
+            [self.runcmd(cmd, cache) for cmd in serialcmds]
+        else:
+            [self.runcmd(cmd, cache) for cmd in cmds]
+
+    # 多进程命令函数
+    def runprocesscmd (self, cmd, msg_queue):
+        try:
+            print ('start: %s' % cmd)
+            cache = {}
+            self.runcmd(cmd, cache)
+            msg_queue.put(cache)
+            print ('end: %s' % cmd)
+        except Exception as what:
+            print ('multiprocess error: what' % what)
+            msg_queue.put({'error': what})
+
+    # 整理命令行，提取多进程函数
+    def sortcmds (self, cmds = []):
+        headlist = []
+        footlist = []
+        for cmd in cmds:
+            cmdobj = self.parsecmd(cmd)
+            ctype = cmdobj['ctype']
+            if ctype.find('dbload') == 0:
+                headlist.append(cmd)
+            elif ctype == 'duexec':
+                headlist.append(cmd)
+            else:
+                footlist.append(cmd)
+        return {
+            'parallel': headlist,
+            'serial': footlist,
+        }
+
+    # 简单处理，命令行全展开，看最大调用次数
+    def checkloop (self, cmds = []):
+        itercount = 0
+        def checkrecursion (cmds = [], itercount = 0):
+            itercount += 1
+            if itercount > 100: # 最大递归深度
+                raise Exception('Runtime Error: checkloop overflow max iter loops')
+            for cmd in cmds:
+                cmdobj = self.parsecmd(cmd)
+                cmdkeys = cmdobj['ckeys']
+                ctype = cmdobj['ctype']
+                if ctype == 'duexec':
+                    src = cmdkeys['src']
+                    if src not in self.config['unitdata']:
+                        raise Exception('Runtime Error: duexec src %s has not been set' % src)
+                    cmds = self.config['unitdata'][src]
+                    cmds = self.readcmdtext(cmds)
+                    itercount = checkrecursion (cmds, itercount)
+            return itercount
+        itercount = checkrecursion(cmds, itercount)
+        return itercount
 
 if __name__ == '__main__':
 

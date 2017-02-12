@@ -21,5 +21,5 @@ if __name__ == '__main__':
     ]
 
     t = CommandAgent(dbconfig)
-    t.runcmds(cmds, cache)
+    t.runcmds(cmds, cache, multiprocess = True)
     print (cache['csvdata'])

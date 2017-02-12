@@ -12,13 +12,14 @@ if __name__ == '__main__':
         testunit2 = f.read()
 
     t = CommandAgent(dbconfig)
-    t.set_unitcmds('tu1', testunit1)
-    t.set_unitcmds('tu2', testunit2)
+    t.set_execunit('tu1', testunit1)
+    t.set_execunit('tu2', testunit2)
 
     cache = {}
     cmds = [
         'duexec --src tu1 --tar dst1',
         'duexec --src tu2 --tar dst2',
+        'dsfilter --src dst2 --tar dst3 --cond A',
     ]
-    t.runcmds(cmds, cache)
-    print (cache['dst1'])
+    t.runcmds(cmds, cache, multiprocess = True)
+    print (cache['dst1'],cache['dst2'])

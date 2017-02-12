@@ -115,3 +115,10 @@
 - examples
     - dstopnrows --src excdata --tar dst1 --by C --num 3
 
+#### duexec
+* 执行特点配置好的命令数据
+- params
+    - src 在内存中的命令行key，可以通过CommandAgent.set_execunit函数写到CommandAgent对象的config['unitdata']中
+    - tar 处理完成后的数据输出
+- examples
+    - duexec --src src1 --tar dst1
