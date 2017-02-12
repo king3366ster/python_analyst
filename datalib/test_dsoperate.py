@@ -16,7 +16,7 @@ if __name__ == '__main__':
         'dsgroup --src excdata   --tar dst1  --by C --cols J|top2 HIS|top G|last C',
         # 'dsresample --src excdata --tar dst1  --by HIS --cols G|sum H|mean --period 3d',
         # 'dstopnrows --src excdata --tar dst1 --by C --num 3',
-        'dsfilter --src excdata --tar dst1 --cond (HIS<2017-12-12) & G>1 & C~pc',
+        'dsfilter --src excdata --tar dst1 --cond (HIS<"2017-12-12") & (G!=4) & (C~="^pc")',
     ]
 
     t = CommandAgent(dbconfig)

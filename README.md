@@ -71,7 +71,6 @@
     - trans 切换列类型/重计算
     - setval 对某个单元设置具体数值
 - examples
-    - dsoperate --tar dest --src src1 --cond (`A`~"^sa*")|(`B`=12)&(`C`>=2016-01-21 02:11:21) 
     - dsoperate --tar dest --src src1 --rename `A`->`B` `D`->`C`
     - dsoperate --tar dest --src src1 --trans `A`=`B`-`C` `D`->int `B`=21
     - dsoperate --tar dest --src src1 --setval `A`.`12` = 123
@@ -84,6 +83,19 @@
 
 - examples
     - dsparsejson --tar dest --src src1 --by col1 --cols key1.subkey1 key2
+
+#### dsfilter
+* 数据比较筛选过滤器
+- params
+    - cond 比较操作命令，列名放在操作符前，程序会自动解析
+        - 运算操作符 < <= == >= > != ~=
+            - ~= 操作符表示正则匹配 如 A ~= "^P+"
+            - 字符类型的比较务必加上引号 如 A == ""
+        - 比较操作符 & |
+            - & 与操作 | 或操作
+        - 优先操作符 ( )
+- examples
+    - dsfilter --src excdata --tar dst1 --cond (HIS<"2017-12-12") & (G!=4) & (C~="^pc")
 
 #### dsgroup
 * 对数据进行编组统计，类似于数据库的groupby(目前支持select count(*))
