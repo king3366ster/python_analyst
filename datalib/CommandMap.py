@@ -24,6 +24,7 @@ CommandMap = {
         'opcol', # 列操作
         'opnull', # 处理null值
         'parsejson', # 解析json字段
+        'replace', # 替换值
         'group',
         'resample',
         'topnrows',

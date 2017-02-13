@@ -19,8 +19,8 @@ def runcmd(cmdobj, cache = None):
         result = filterdata.opcoldata(cmdobj, cache)
     elif ctype == 'opnull':
         result = filterdata.opnulldata(cmdobj, cache)
-    elif ctype == 'limit':
-        result = filterdata.limitdata(cmdobj, cache)
+    elif ctype == 'replace':
+        result = filterdata.replacedata(cmdobj, cache)
     elif ctype == 'parsejson':
         result = filterdata.parsejsondata(cmdobj, cache)
     return result

@@ -172,6 +172,13 @@ def filterdata (cmdobj, cache = None):
             offset = int(limits[0])
             limit = int(limits[1])
         data = data.iloc[offset : offset + limit]
+    if 'cols' in cmdkeys:
+        cols = cmdkeys['cols'].strip()
+        cols = re.split(r'\s+', cols)
+        for col in cols:
+            if col not in data:
+                raise Exception('Runtime Error: filter cols %s not in data' % col)
+        data = data[cols]
     return data
    
 @checkparams
@@ -245,6 +252,30 @@ def sortdata (cmdobj, cache = None):
             orders.append(order)
         if len(columns) > 0:
             data.sort_values(by = columns, ascending = orders, inplace = True)
+    return data
+
+@checkparams
+def replacedata (cmdobj, cache = None):
+    cmdkeys = cmdobj['ckeys']
+    data = cache[cmdkeys['src']].copy(deep = True)
+    if 'setval' in cmdkeys:
+        setval = cmdkeys['setval']
+        setval = re.sub(r'\s*\->\s*', '->', setval)
+        setvals = re.split(r'\s+', setval)
+        for setcmd in setvals:
+            if setcmd.find('->') > 0:
+                setcmd = setcmd.split('->')
+                if len(setcmd) == 2:
+                    val1 = setcmd[0]
+                    val2 = setcmd[1]
+                    if val1 == 'null':
+                        val1 = 'np.nan'
+                    if val2 == 'null':
+                        val2 = 'np.nan'
+                    command = 'data = data.replace(%s,%s)' % (val1, val2)
+                    exec(command)
+                else:
+                    raise Exception('Command Error: replacedata setval need like <val1> = <val2>')
     return data
 
 @checkparams
