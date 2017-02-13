@@ -21,7 +21,6 @@ class CommandProcess:
                 self.proc_list.append(proc)
                 proc.daemon = False
                 proc.start()
-            print ('process running')
             for proc in self.proc_list:
                 proc.join()
 
@@ -46,14 +45,14 @@ class CommandProcess:
 def testruncmd (cmd, msg_queue):
     try:
         cmd = unicode(cmd)
-        print ('start: %s' % cmd)
+        # print ('multiprocess start: %s' % cmd)
         time.sleep(1 + 2 * random.random())
         if cmd == 'group':
             raise Exception('test error')
         msg_queue.put({
             cmd: pd.DataFrame(np.random.randn(6, 4), columns=list('ABCD'))
         })
-        print ('end: %s' % cmd)
+        print ('multiprocess end: %s' % cmd)
     except Exception as what:
         msg_queue.put({'error': what})
 

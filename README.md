@@ -5,86 +5,65 @@
     - query mysql语句
     - sheet excel表格/redis hset名
 
-#### dbloadmysql
+#### loadmysql
 - examples
-    - dbloadmysql --db localdb --tar msdata --query select * from tb_new limit 20
+    - loadmysql --db localdb --tar msdata --query select * from tb_new limit 20
 
-#### dbsavemysql
+#### savemysql
 - examples
-    - dbsavemysql --db localdb --src csvdata --tar tb_new --if_exists append --unique channel 
+    - savemysql --db localdb --src csvdata --tar tb_new --if_exists append --unique channel 
 
-#### dbloadredis
+#### loadredis
 - examples
-    - dbloadredis --db testdb --tar dataframe --sheet hsetname 
+    - loadredis --db testdb --tar dataframe --sheet hsetname 
 
-#### dbsaveredis
+#### saveredis
 
-#### dbloadmongo
+#### loadmongo
 - examples
     -dbloadmongo --db testdb --tar dataframe --query db.query.find()
 
-#### dbsavemongo
+#### savemongo
 
-#### dbloadexcel
+#### loadexcel
 - examples
-    - dbloadexcel --tar dataframe --src source--sheet Sheet1
+    - loadexcel --tar dataframe --src source--sheet Sheet1
 
-#### dbsaveexcel
+#### saveexcel
 - examples
-    - dbsaveexcel --tar dest --src source
+    - saveexcel --tar dest --src source
 
-#### dbloadcsv
+#### loadcsv
 - examples
-    - dbloadcsv --tar dataframe --src source
+    - loadcsv --tar dataframe --src source
 
-#### dbsavecsv
+#### savecsv
 - examples
-    - dbsavecsv --tar dest --src source
+    - savecsv --tar dest --src source
 
 ### 多数据聚合类
 - params
     - tar 目标节点名
     - src 源节点名，可以多个节点（merge/concat至少2个），空格分隔
 
-#### dmmerge
+#### merge
 - params
     - join 连接方式，merge/concat分别为left/right/inner/outer，及连接的键
 - examples
-    - dmmerge --tar dest --src src1 src2 --join left cid aid
+    - merge --tar dest --src src1 src2 --join left cid aid
 
-#### dmconcat
+#### concat
 - params
     - join 连接方式，merge/concat分别为left/right/inner/outer，及连接的键
 - examples
-    - dmconcat --tar dest --src src1 src2 --join inner cid aid
+    - concat --tar dest --src src1 src2 --join inner cid aid
 
 ### 单数据筛选类
 - params
     - tar 目标节点名
     - src 源节点名，可以多个节点（merge/concat至少2个），空格分隔
 
-#### dsoperate
-- params
-    - order 对列进行排序，以空格分割字段，以空格分隔列名与排序规则
-    - cond 获取条件筛选结果 ~(正则匹配) > < =
-    - rename 重命名列名
-    - trans 切换列类型/重计算
-    - setval 对某个单元设置具体数值
-- examples
-    - dsoperate --tar dest --src src1 --rename `A`->`B` `D`->`C`
-    - dsoperate --tar dest --src src1 --trans `A`=`B`-`C` `D`->int `B`=21
-    - dsoperate --tar dest --src src1 --setval `A`.`12` = 123
-
-#### dsparsejson(需要迭代器)
-* 对数据某一字段进行json解析，提取对应的keyname，生成新的column
-- params
-    - by 进行json解析的字段
-    - cols 需要解析json字段的属性
-
-- examples
-    - dsparsejson --tar dest --src src1 --by col1 --cols key1.subkey1 key2
-
-#### dsfilter
+#### filter
 * 数据比较筛选过滤器
 - params
     - cond 比较操作命令，列名放在操作符前，程序会自动解析
@@ -94,10 +73,54 @@
         - 比较操作符 & |
             - & 与操作 | 或操作
         - 优先操作符 ( )
+    - limit 获取特定行
+        - 一个参数时(--limit num)等同于 offset 0 limit num
+        - 两个参数时(--limit num1 num2)等同于 offset num1 limit num2
+        - 超过两个参数，只取前两个参数
 - examples
-    - dsfilter --src excdata --tar dst1 --cond (HIS<"2017-12-12") & (G!=4) & (C~="^pc")
+    - filter --src excdata --tar dst1 --cond (HIS<"2017-12-12") & (G!=4) & (C~="^pc")
+    - filter --src excdata --tar dst1 --cond (HIS<"2017-12-12") --limit 2 4
 
-#### dsgroup
+#### opcol
+* 列操作
+- params
+    - setcol 设置列 如 A=B-C B=1 D->int/time/str/float
+    - dropcol 删除列
+    - leftcol 剩余列
+    - rename 重命名列
+    - 任何一条opcol命令执行顺序为 setcol -> dropcol -> leftcol -> rename 可多选少选
+- examples
+    - opcol --src excdata --tar dst2 --setcol M1=A+B, HI = HIS, T3 = HIS-T2, T3->str
+    - opcol --src excdata --tar dst2 --setcol HI = HIS --dropcol HIS
+    - opcol --src excdata --tar dst2 --setcol HI = HIS --leftcol A HI
+    - opcol --src excdata --tar dst2 --setcol HI = HIS --dropcol HIS --leftcol A B C G --rename B -> 测试 C-> 公平
+
+#### opnull
+* 空值操作
+- params
+    - fill 对空值的填充内容
+- examples
+    - opnull --src excdata --tar dst2 --fill 3.2
+
+#### sort
+- params
+    - order <列名><排序方式> 以逗号(,)分隔
+    - 排序方式：asc|desc 不填默认升序
+    - 排序优先级依命令顺序
+- examples
+    - sort --src excdata --tar dst2 --order A asc, G desc
+
+#### parsejson(需要迭代器)
+* 对数据某一字段进行json解析，提取对应的keyname，生成新的column
+- params
+    - cols 需要解析json字段的列及属性 如col1.key1
+    - json内部属性嵌套可以使用.操作符级联
+
+- examples
+    - parsejson --tar dest --src src1 --cols col1.key1.subkey1 col2.key2
+
+### 聚合分析类
+#### group
 * 对数据进行编组统计，类似于数据库的groupby(目前支持select count(*))
 - params
     - by 进行groupby的键值，可多选
@@ -105,10 +128,10 @@
         - sum/mean/count/std/var/min/max/top/last
         - top(N): top2 top3 top1等同于top
 - examples
-    - dsgroup --tar dest --src src1 --by cola --cols col1|sum col2|mean 
-    - dsgroup --tar dest --src src1 --by col1 col2 --cols col3 col4
+    - group --tar dest --src src1 --by cola --cols col1|sum col2|mean 
+    - group --tar dest --src src1 --by col1 col2 --cols col3 col4
 
-#### dsresample
+#### resample
 * 时间序列重采样
 - params
     - by 进行重采样的列
@@ -117,20 +140,21 @@
         - top(N): top2 top3 top1等同于top
     - period 采样周期
 - examples
-    - dsresample --src excdata --tar dst1  --by HIS --cols G|sum H|mean --period 3d
+    - resample --src excdata --tar dst1  --by HIS --cols G|sum H|mean --period 3d
 
-#### dstopnrows
+#### topnrows
 * 获取特定标签顶部的N行
 - params
     - by 对比维度
     - num 获取每一对比维度的行数
 - examples
-    - dstopnrows --src excdata --tar dst1 --by C --num 3
+    - topnrows --src excdata --tar dst1 --by C --num 3
 
-#### duexec
+### 执行单元类
+#### execunit
 * 执行特点配置好的命令数据
 - params
     - src 在内存中的命令行key，可以通过CommandAgent.set_execunit函数写到CommandAgent对象的config['unitdata']中
     - tar 处理完成后的数据输出
 - examples
-    - duexec --src src1 --tar dst1
+    - execunit --src src1 --tar dst1

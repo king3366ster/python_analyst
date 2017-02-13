@@ -17,9 +17,9 @@ if __name__ == '__main__':
 
     cache = {}
     cmds = [
-        'duexec --src tu1 --tar dst1',
-        'duexec --src tu2 --tar dst2',
-        'dsfilter --src dst2 --tar dst3 --cond A',
+        'execunit --src tu1 --tar dst1',
+        'execunit --src tu2 --tar dst2',
+        'filter --src dst2 --tar dst3 --cond C != ""',
     ]
     t.runcmds(cmds, cache, multiprocess = True)
     print (cache['dst1'],cache['dst2'])

@@ -14,11 +14,11 @@ if __name__ == '__main__':
         'loadexcel --src %s --tar excdata' % t_ex,
         'loadcsv --src %s --tar csvdata' % t_cv,
         # 'loadmysql --db localdb --tar msdata --query select * from tb_new limit 20',
-        # 'saveexcel --src csvdata --tar ../testdata/testnewdata',
-        # 'savecsv --src msdata',
-        'savemysql --db localdb --src excdata --tar tb_new --if_exists replace --unique A --need_datetime true',
+        # 'merge --tar dst1 --src excdata csvdata --join left A B',
+        'merge --tar dst2 --src excdata csvdata --join inner C B',
+        'concat --tar dst1 --src csvdata excdata --join outer --axis 0',
     ]
 
     t = CommandAgent(dbconfig)
-    t.runcmds(cmds, cache, multiprocess = True)
-    print (cache['csvdata'], cache['msdata'])
+    t.runcmds(cmds, cache)
+    print (cache['dst1'], cache['dst2'])

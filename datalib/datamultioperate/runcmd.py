@@ -5,9 +5,9 @@ import os, sys, pdb
 def runcmd(cmdobj, cache = None):
     ctype = cmdobj['ctype']
     result = None
-    if ctype == 'dmmerge':
+    if ctype == 'merge':
         result = mergedata.mergedata(cmdobj, cache)
-    elif ctype == 'dmconcat':
+    elif ctype == 'concat':
         result = mergedata.concatdata(cmdobj, cache)
     return result
 

@@ -79,12 +79,14 @@ def saveexcel (cmdobj, config = None, cache = None):
         ws['%s%s' %(col, index_row)] = dfColumns[i]
 
     for i in range(0, len(dfIndexs)):
-        index_row = dfIndexs[i] + 2
-        ws['A%d' % index_row] = dfIndexs[i]
+        index_row = i + 2 #dfIndexs[i] + 2
+        ws['A%d' % index_row] = int(dfIndexs[i])
         for j in range(0, len(dfColumns)):
             index_col = j + 1
             col = get_column_letter(index_col + 1)
             tmpValue = dfValues[i][j]
+            if pd.isnull(tmpValue):
+                continue
             try:
                 ws['%s%s' %(col, index_row)] = tmpValue
             except Exception as what:

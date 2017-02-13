@@ -3,6 +3,7 @@ import os, sys, pdb
 import re, copy
 import databaseaccess.runcmd as db, datamultioperate.runcmd as dm, datasingleoperate.runcmd as ds
 from CommandProcess import CommandProcess
+from CommandMap import CommandMap
 
 class CommandAgent(object):
     """docstring for CommandAgent"""
@@ -39,6 +40,10 @@ class CommandAgent(object):
         return commands
 
     def parsetext (self, cmdline, param_map = {}):
+        try:
+            cmdline = cmdline.decode('utf-8', 'ignore')
+        except:
+            cmdline = cmdline
         cmdline = cmdline.strip()
         if cmdline.find('$set') >= 0:
             cmdline = re.sub('^\s*\$set\s+', '', cmdline)
@@ -66,7 +71,11 @@ class CommandAgent(object):
         return cmdline
 
     def parsecmd (self, cmd):
-        cmd = unicode(cmd).strip()
+        try:
+            cmd = cmd.decode('utf-8', 'ignore')
+        except:
+            cmd = cmd
+        cmd = cmd.strip()
         space = re.search(r'\s+', cmd)
         if not space:
             return {
@@ -103,13 +112,13 @@ class CommandAgent(object):
     def rununit (self, cmdobj):
         cmdkeys = cmdobj['ckeys']
         if 'src' not in cmdkeys:
-            raise Exception('Command Error: duexec without src')
+            raise Exception('Command Error: execunit without src')
         if 'tar' not in cmdkeys:
-            raise Exception('Command Error: duexec without tar')
+            raise Exception('Command Error: execunit without tar')
         src = cmdkeys['src']
         tar = cmdkeys['tar']
         if src not in self.config['unitdata']:
-            raise Exception('Runtime Error: duexec src %s has not been set' % src)
+            raise Exception('Runtime Error: execunit src %s has not been set' % src)
         cmds = self.config['unitdata'][src]
         cmds = self.readcmdtext(cmds)
         output = None
@@ -123,20 +132,23 @@ class CommandAgent(object):
         return result
 
     def runcmd (self, cmd, cache = None):
+        print (cmd)
         cmdobj = self.parsecmd(cmd)
         ctype = cmdobj['ctype']
-        if ctype.find('db') == 0: # databaseaccess类
-            result = db.runcmd(cmdobj, config = self.config, cache = cache)
-        elif ctype.find('ds') == 0: # datasingleoperate类
-            result = ds.runcmd(cmdobj, cache = cache)
-        elif ctype.find('dm') == 0: # datasingleoperate类
-            result = dm.runcmd(cmdobj, cache = cache)
-        elif ctype == 'duexec': # dataunitexecute类
+        if ctype in CommandMap['execunit']:
             result = self.rununit(cmdobj)
+        elif ctype in CommandMap['loaddata']:
+            result = db.runcmd(cmdobj, config = self.config, cache = cache)
+        elif ctype in CommandMap['savedata']:
+            result = db.runcmd(cmdobj, config = self.config, cache = cache)
+        elif ctype in CommandMap['singledata']:
+            result = ds.runcmd(cmdobj, cache = cache)
+        elif ctype in CommandMap['multipledata']:
+            result = dm.runcmd(cmdobj, cache = cache)
         else:
             return None
         if 'tar' in cmdobj['ckeys'] and cache is not None:
-            if ctype.find('dbsave') != 0:
+            if ctype.find('savedata') != 0:
                 cache[cmdobj['ckeys']['tar']] = result
 
     def runcmds (self, cmds = [], cache = None, multiprocess = False):
@@ -160,14 +172,17 @@ class CommandAgent(object):
     # 多进程命令函数
     def runprocesscmd (self, cmd, msg_queue):
         try:
-            print ('start: %s' % cmd)
+            # print ('multiprocess start: %s' % cmd)
             cache = {}
             self.runcmd(cmd, cache)
             msg_queue.put(cache)
-            print ('end: %s' % cmd)
+            print ('multiprocess end: %s' % cmd)
         except Exception as what:
-            print ('multiprocess error: what' % what)
-            msg_queue.put({'error': what})
+            try:
+                print ('multiprocess error: %s' % unicode(what))
+                msg_queue.put({'error': what})
+            except:
+                print ('multiprocess error: unknown error')
 
     # 整理命令行，提取多进程函数
     def sortcmds (self, cmds = []):
@@ -176,9 +191,9 @@ class CommandAgent(object):
         for cmd in cmds:
             cmdobj = self.parsecmd(cmd)
             ctype = cmdobj['ctype']
-            if ctype.find('dbload') == 0:
+            if ctype.find('load') == 0:
                 headlist.append(cmd)
-            elif ctype == 'duexec':
+            elif ctype == 'execunit':
                 headlist.append(cmd)
             else:
                 footlist.append(cmd)
@@ -198,10 +213,10 @@ class CommandAgent(object):
                 cmdobj = self.parsecmd(cmd)
                 cmdkeys = cmdobj['ckeys']
                 ctype = cmdobj['ctype']
-                if ctype == 'duexec':
+                if ctype == 'execunit':
                     src = cmdkeys['src']
                     if src not in self.config['unitdata']:
-                        raise Exception('Runtime Error: duexec src %s has not been set' % src)
+                        raise Exception('Runtime Error: execunit src %s has not been set' % src)
                     cmds = self.config['unitdata'][src]
                     cmds = self.readcmdtext(cmds)
                     itercount = checkrecursion (cmds, itercount)
@@ -215,10 +230,10 @@ if __name__ == '__main__':
     t_ex = 'testdata/test.xlsx'
     t_cv = 'testdata/test.csv'
     cmds = [
-        'dbloadexcel --src %s --tar excdata' % t_ex,
-        'dbloadcsv --src %s --tar csvdata' % t_cv,
-        'dmmerge --tar dst1 --src excdata csvdata --join inner A C B',
-        'dsgroup --tar dst2 --src dst1 --by A --cols B|count'
+        'loadexcel --src %s --tar excdata' % t_ex,
+        'loadcsv --src %s --tar csvdata' % t_cv,
+        'merge --tar dst1 --src excdata csvdata --join inner A C B',
+        'group --tar dst2 --src dst1 --by A --cols B|count'
     ]
     t = CommandAgent()
     t.runcmds(cmds, cache)
