@@ -37,7 +37,7 @@ def getcols (cmdobj, data = None):
     cols = re.sub(r'\s*\|\s*', '|', cols)
     cols = re.split(r'\s+', cols)
 
-    colfunc_dict = dict()
+    colfunc_list = []
     for col in cols:
         rindex = col.rfind('|')
         if rindex > 0:
@@ -48,8 +48,11 @@ def getcols (cmdobj, data = None):
             column = col
         if column not in data:
             raise Exception('Runtime Error: %s %s not in %s' % (ctype, column, src))
-        colfunc_dict[column] = method
-    return colfunc_dict
+        colfunc_list.append({
+            'column': column,
+            'method': method,
+        })
+    return colfunc_list
 
 def generate_group (method, column, grouped = None, data = None):
     data_new = None
@@ -86,11 +89,12 @@ def groupdata (cmdobj, cache = None):
     data = cache[src].copy(deep = True)
     bykeys = getbykey(cmdobj, cache)
 
-    colfunc_dict = getcols(cmdobj, data)
+    colfunc_list = getcols(cmdobj, data)
     grouped = data.groupby(bykeys)
     col_data = dict()
-    for column in colfunc_dict:
-        method = colfunc_dict[column]
+    for item in colfunc_list:
+        column = item['column']
+        method = item['method']
         try:
             series = generate_group(method, column, grouped = grouped, data = data)
         except Exception as what:
@@ -114,11 +118,12 @@ def resampledata (cmdobj, cache = None):
     else:
         period = 'M' # 1d 2d 
 
-    colfunc_dict = getcols(cmdobj, data)
+    colfunc_list = getcols(cmdobj, data)
     grouped = data.resample(period)
     col_data = dict()
-    for column in colfunc_dict:
-        method = colfunc_dict[column]
+    for item in colfunc_list:
+        column = item['column']
+        method = item['method']
         try:
             series = generate_group(method, column, grouped = grouped, data = data)
         except Exception as what:
