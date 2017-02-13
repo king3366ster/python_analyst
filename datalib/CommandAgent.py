@@ -149,7 +149,9 @@ class CommandAgent(object):
             return None
         if 'tar' in cmdobj['ckeys'] and cache is not None:
             if ctype.find('savedata') != 0:
-                cache[cmdobj['ckeys']['tar']] = result
+                target = cmdobj['ckeys']['tar']
+                cache[target] = result
+                print ('  tar: %s colums: %r' % (target, list(result.columns)))
 
     def runcmds (self, cmds = [], cache = None, multiprocess = False):
         self.checkloop (cmds) # 检查递归深度

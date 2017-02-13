@@ -73,6 +73,8 @@
         - 比较操作符 & |
             - & 与操作 | 或操作
         - 优先操作符 ( )
+    - cols
+        - 选取特定的列 (可选)
     - limit 获取特定行
         - 一个参数时(--limit num)等同于 offset 0 limit num
         - 两个参数时(--limit num1 num2)等同于 offset num1 limit num2
@@ -118,6 +120,13 @@
 
 - examples
     - parsejson --tar dest --src src1 --cols col1.key1.subkey1 col2.key2
+
+#### replace
+* 全局替换
+- params
+    - setval 将特定数值进行替换
+- examples
+    - replace --tar dest --src src1 --setval 0->null 3->"as"
 
 ### 聚合分析类
 #### group
