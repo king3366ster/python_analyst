@@ -8,7 +8,7 @@ def get_src (cmdobj):
     cmdkeys = cmdobj['ckeys']
     srcs = cmdkeys['src']
     srcs = re.split(r'\s+', srcs)
-    return set(srcs)
+    return srcs
 
 def get_joinway (cmdobj, cache):
     ctype = cmdobj['ctype']

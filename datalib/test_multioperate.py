@@ -15,8 +15,8 @@ if __name__ == '__main__':
         'loadcsv --src %s --tar csvdata' % t_cv,
         # 'loadmysql --db localdb --tar msdata --query select * from tb_new limit 20',
         # 'merge --tar dst1 --src excdata csvdata --join left A B',
-        'merge --tar dst2 --src excdata csvdata --join inner C B',
         'concat --tar dst1 --src csvdata excdata --join outer --axis 0',
+        'merge --tar dst2 --src excdata csvdata dst1 --join left C B',
     ]
 
     t = CommandAgent(dbconfig)

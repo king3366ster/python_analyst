@@ -20,15 +20,15 @@ if __name__ == '__main__':
         # 'filter --src excdata --tar dst2 --cond (HIS<"2017-12-12") & (G!=4) & (C~="^pc")',
         # 'filter --src excdata --tar dst2 --cond (HIS<"2017-12-12") --limit 4 2 --cols G HIS',
         # 'opcol --src excdata --tar dst2 --setcol M1=A+B, HI = HIS, T3 = HIS-T2, T3->str',
-        # 'opcol --src excdata --tar dst2 --setcol HI = HIS --dropcol HIS --leftcol A B C G',
+        'opcol --src excdata --tar dst2 --setcol HI = HIS, M2 = 1 --dropcol HIS --leftcol A B C G M2',
         # 'opcol --src excdata --tar dst2 --setcol HI = HIS --dropcol HIS --leftcol A B C G --rename B -> 测试 C-> 公平',
         # 'sort --src excdata --tar dst2 --order A asc, G desc, J',
-        # 'opnull --src excdata --tar dst2 --fill 3.2',
-        'parsejson --src excdata --tar dst2 --cols jsd.d2 jsd.dv jsd.dv.fd'
+        # 'opnull --src excdata --tar dst2 --setval 3.2',
+        # 'parsejson --src excdata --tar dst2 --cols jsd.d2 jsd.dv jsd.dv.fd'
         # 'saveexcel --src dst2 --tar ../testdata/t.xlsx',
     ]
 
     t = CommandAgent(dbconfig)
     t.runcmds(cmds, cache)
     # print (cache['excdata'])
-    print (cache['dst3'])
+    print (cache['dst2'])

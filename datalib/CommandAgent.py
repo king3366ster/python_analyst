@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*- 
-import os, sys, pdb
+import os, sys, signal, pdb
+import multiprocessing
 import re, copy
 import databaseaccess.runcmd as db, datamultioperate.runcmd as dm, datasingleoperate.runcmd as ds
 from CommandProcess import CommandProcess
@@ -148,7 +149,7 @@ class CommandAgent(object):
         else:
             return None
         if 'tar' in cmdobj['ckeys'] and cache is not None:
-            if ctype.find('savedata') != 0:
+            if result is not None:
                 target = cmdobj['ckeys']['tar']
                 cache[target] = result
                 print ('  tar: %s colums: %r' % (target, list(result.columns)))
@@ -174,7 +175,7 @@ class CommandAgent(object):
     # 多进程命令函数
     def runprocesscmd (self, cmd, msg_queue):
         try:
-            # print ('multiprocess start: %s' % cmd)
+            print ('multiprocess start: %s' % cmd)
             cache = {}
             self.runcmd(cmd, cache)
             msg_queue.put(cache)
@@ -185,6 +186,11 @@ class CommandAgent(object):
                 msg_queue.put({'error': what})
             except:
                 print ('multiprocess error: unknown error')
+        # curr_proc = multiprocessing.current_process()
+        # if curr_proc.is_alive():
+        #     pid = curr_proc.pid
+        #     print ('kill pid %d' % pid)
+        #     os.kill(pid, 9)        
 
     # 整理命令行，提取多进程函数
     def sortcmds (self, cmds = []):
@@ -196,7 +202,7 @@ class CommandAgent(object):
             if ctype.find('load') == 0:
                 headlist.append(cmd)
             elif ctype == 'execunit':
-                headlist.append(cmd)
+                footlist.append(cmd)
             else:
                 footlist.append(cmd)
         return {
@@ -229,8 +235,8 @@ class CommandAgent(object):
 if __name__ == '__main__':
 
     cache = {}
-    t_ex = 'testdata/test.xlsx'
-    t_cv = 'testdata/test.csv'
+    t_ex = '../testdata/test.xlsx'
+    t_cv = '../testdata/test.csv'
     cmds = [
         'loadexcel --src %s --tar excdata' % t_ex,
         'loadcsv --src %s --tar csvdata' % t_cv,

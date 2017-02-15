@@ -122,8 +122,11 @@ def parse_setcol_single (command, data = {}):
         dst = cmd_list[0].strip()
         cmd = cmd_list[1].strip()
         exec(parse_setcol_command(cmd, data))
-        if colnew.dtype == 'timedelta64[ns]':
-            colnew = colnew / np.timedelta64(1, 's')
+        try:
+            if colnew.dtype == 'timedelta64[ns]':
+                colnew = colnew / np.timedelta64(1, 's')
+        except:
+            pass
         if dst in data:
             data[dst] = colnew
         else:
@@ -212,8 +215,8 @@ def opcoldata (cmdobj, cache = None):
 def opnulldata (cmdobj, cache = None):
     cmdkeys = cmdobj['ckeys']
     data = cache[cmdkeys['src']].copy(deep = True)
-    if 'fill' in cmdkeys:
-        fillword = cmdkeys['fill'].strip()
+    if 'setval' in cmdkeys:
+        fillword = cmdkeys['setval'].strip()
         if re.match(r'^[\'\"][^\'\"]*[\'\"]$', fillword):
             data.fillna(fillword[1:-1], inplace = True)
         elif re.match(r'^\d+$', fillword):

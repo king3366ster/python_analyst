@@ -10,28 +10,35 @@ class CommandProcess:
         self.func_name = func_name
         self.proc_list = []
         self.msg_queue = multiprocessing.Queue()
+        # self.manager = multiprocessing.Manager()
+        # self.msg_queue = self.manager.Queue()
 
     def run (self, params = []):
         if len(params) == 0:
             return None
         else:
-            proc_num = len(params)
+            # self.pool = multiprocessing.Pool()
             for param in params:
+                # proc = self.pool.apply_async(self.func_name, args = (param, self.msg_queue))
                 proc = multiprocessing.Process(target = self.func_name, args = (param, self.msg_queue))
                 self.proc_list.append(proc)
-                proc.daemon = False
+                proc.daemon = True
                 proc.start()
             for proc in self.proc_list:
                 proc.join()
+            # self.pool.close()
+            # self.pool.join()
 
             cache = dict()
-            while proc_num > 0:
+            self.msg_queue.put('STOP')
+            msg_cache = None
+            while msg_cache != 'STOP':
                 if not self.msg_queue.empty():
                     msg_cache = self.msg_queue.get()
                     if 'error' in msg_cache:
                         raise Exception(unicode(msg_cache['error']))
-                    cache = dict(cache, **msg_cache)
-                    proc_num -= 1
+                    if isinstance(msg_cache, dict) == True:
+                        cache = dict(cache, **msg_cache)
             return cache
 
     def stop(self):
@@ -40,14 +47,16 @@ class CommandProcess:
                 proc.terminate()
                 print ('pid %d stoped' % proc.pid)
                 proc.join()
-        print ('process stoped')
+        print ('process terminated')
+        # self.pool.terminate()
+        # print ('process pool terminated')
 
 def testruncmd (cmd, msg_queue):
     try:
         cmd = unicode(cmd)
         # print ('multiprocess start: %s' % cmd)
         time.sleep(1 + 2 * random.random())
-        if cmd == 'group':
+        if cmd == 'groupe':
             raise Exception('test error')
         msg_queue.put({
             cmd: pd.DataFrame(np.random.randn(6, 4), columns=list('ABCD'))
@@ -59,4 +68,4 @@ def testruncmd (cmd, msg_queue):
 if __name__ == '__main__':
 
     t = CommandProcess(testruncmd)
-    print (t.run([1, 'group', 'unit']))
+    print (t.run([1, 'unit', 'group']))
