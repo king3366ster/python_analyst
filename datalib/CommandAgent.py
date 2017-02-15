@@ -175,7 +175,7 @@ class CommandAgent(object):
     # 多进程命令函数
     def runprocesscmd (self, cmd, msg_queue):
         try:
-            print ('multiprocess start: %s' % cmd)
+            # print ('multiprocess start: %s' % cmd)
             cache = {}
             self.runcmd(cmd, cache)
             msg_queue.put(cache)

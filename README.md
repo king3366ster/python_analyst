@@ -100,9 +100,9 @@
 #### opnull
 * 空值操作
 - params
-    - fill 对空值的填充内容
+    - setval 对空值的填充内容
 - examples
-    - opnull --src excdata --tar dst2 --fill 3.2
+    - opnull --src excdata --tar dst2 --setval 3.2
 
 #### sort
 - params
