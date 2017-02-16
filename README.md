@@ -3,11 +3,12 @@
 #### 数据处理库环境安装
     - pip install numpy pandas openpyxl mysql-python sqlalchemy
 #### web后台环境安装
-    - pip django channels redis asgi_redis
+    - pip install django channels redis asgi_redis django_redis_sessions
 #### web前端环境安装
     - npm install
 
 ### 初始化命令
+    - 将main文件夹中的settings_test.py文件重命名为settings.py
     - 测试环境初始化部署：
         - python manage.py makemigrations app
         - python manage.py migrate

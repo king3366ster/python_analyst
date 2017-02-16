@@ -28,9 +28,9 @@ export default {
     }
   },
   methods: {
-    sendCommands () {
-      this.socket.send(this.commands)
-      console.log(this.commands)
+    async sendCommands () {
+      let res = await this.socket.sendOnce(this.commands)
+      console.log(res)
     }
   }
 }

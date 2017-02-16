@@ -5,7 +5,7 @@ class SocketUnit {
     url = url || `ws://${window.location.host}/ssh/`
     this.cbMap = Object.create(null)
     this.connection = new WebSocket(url)
-    this.channel = 1
+    this.channel = 0
     this.init(hook)
   }
   init (hook) {
@@ -17,16 +17,14 @@ class SocketUnit {
       console.error(`socket error: ${err}`)
     }
     conn.onmessage = event => {
-      // console.log(event.data)
       let data = JSON.parse(event.data)
       if (data.code === 200) {
-        if (data.json) {
-          console.log(data.json)
-        } else if (data.text) {
-          console.log(data.text)
+        let channel = data.channel
+        if (this.cbMap[channel]) {
+          this.cbMap[channel](data.data)
         }
       } else {
-        console.info(data)
+        console.error(data)
       }
       if (hook instanceof Function) {
         hook(data)
@@ -36,13 +34,12 @@ class SocketUnit {
   sendOnce (message) {
     this.channel ++
     let msg = {
-      msg: message,
+      message,
       channel: this.channel
     }
     this.connection.send(JSON.stringify(msg))
     return new Promise ((resolve, reject) => {
       this.cbMap[msg.channel] = data => {
-        console.log(data)
         resolve(data)
       }
     })
@@ -51,7 +48,7 @@ class SocketUnit {
     this.channel ++
     channel = channel || this.channel
     let msg = {
-      msg: message,
+      message,
       channel
     }
     this.connection.send(JSON.stringify(msg))

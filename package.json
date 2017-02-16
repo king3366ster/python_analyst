@@ -44,6 +44,7 @@
     "npm-run-all": "^3.1.0",
     "postcss": "^5.2.0",
     "postcss-calc": "^5.3.1",
+    "postcss-cli": "^2.6.0",
     "postcss-cssnext": "^2.8.0",
     "postcss-custom-properties": "^5.0.1",
     "postcss-mixins": "^5.2.0",

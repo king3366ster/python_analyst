@@ -6,33 +6,23 @@ from channels import Channel, Group
 
 def format(message, extra = {}):
     channel_num = -1
-    code = 200
+    channel_type = 'text'
+    channel_code = 200
     if 'channel' in extra:
         channel_num = extra['channel']
+    if 'type' in extra:
+        channel_type = extra['type']
+    if 'code' in extra:
+        channel_code = extra['code']
+    if isinstance(message, dict) or isinstance(message, list):
+        message = json.dumps(message)
 
-    if isinstance(message, unicode) or isinstance(message, str):
-        return {
-            'text': json.dumps({
-                'text': message,
-                'channel': channel_num,
-                'code': 206
-            })
-        }
-    else:
-        if 'code' in message:
-            code = message['code']
-            del message['code']
-        else:
-            code = 200
-        result = json.dumps({
-                'json': message,
-                'channel': channel_num,
-                'code': code
-            }).decode('unicode_escape')
-        return {
-            'text': result
-        }
+    result = '{"code": %r, "data": %s, "type": "%s", "channel": %r}' % (channel_code, message, channel_type, channel_num)
+    result = result.decode('unicode_escape')
+    return {
+        'text': result
+    }
 
-def send(channel, message):
-    message_sent = format(message)
+def send(channel, message, extra = {}):
+    message_sent = format(message, extra)
     channel.reply_channel.send(message_sent)
