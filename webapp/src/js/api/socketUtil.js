@@ -17,7 +17,13 @@ class SocketUnit {
       console.error(`socket error: ${err}`)
     }
     conn.onmessage = event => {
-      let data = JSON.parse(event.data)
+      let data = ''
+      try {
+        data = JSON.parse(event.data)
+      } catch (err) {
+        console.err(`message error: ${err}`)
+        console.info(event.data)
+      }
       if (data.code === 200) {
         let channel = data.channel
         if (this.cbMap[channel]) {
@@ -31,9 +37,10 @@ class SocketUnit {
       }
     }
   }
-  sendOnce (message) {
+  sendOnce (message, type = 'command') {
     this.channel ++
     let msg = {
+      type,
       message,
       channel: this.channel
     }
@@ -44,10 +51,11 @@ class SocketUnit {
       }
     })
   }
-  send (message, channel) {
+  send (message, type = 'command', channel = -1) {
     this.channel ++
     channel = channel || this.channel
     let msg = {
+      type,
       message,
       channel
     }

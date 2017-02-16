@@ -19,6 +19,7 @@ def format(message, extra = {}):
 
     result = '{"code": %r, "data": %s, "type": "%s", "channel": %r}' % (channel_code, message, channel_type, channel_num)
     result = result.decode('unicode_escape')
+    print result
     return {
         'text': result
     }
