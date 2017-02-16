@@ -13,33 +13,36 @@ class CommandProcess:
         # self.manager = multiprocessing.Manager()
         # self.msg_queue = self.manager.Queue()
 
-    def run (self, params = []):
+    def run (self, params = [], cache = None, comm = False):
         if len(params) == 0:
             return None
         else:
             # self.pool = multiprocessing.Pool()
             for param in params:
                 # proc = self.pool.apply_async(self.func_name, args = (param, self.msg_queue))
-                proc = multiprocessing.Process(target = self.func_name, args = (param, self.msg_queue))
+                proc = multiprocessing.Process(target = self.func_name, args = (param, cache, self.msg_queue))
                 self.proc_list.append(proc)
-                proc.daemon = True
+                proc.daemon = comm
                 proc.start()
-            for proc in self.proc_list:
-                proc.join()
             # self.pool.close()
             # self.pool.join()
 
-            cache = dict()
-            self.msg_queue.put('STOP')
-            msg_cache = None
-            while msg_cache != 'STOP':
-                if not self.msg_queue.empty():
-                    msg_cache = self.msg_queue.get()
-                    if 'error' in msg_cache:
-                        raise Exception(unicode(msg_cache['error']))
-                    if isinstance(msg_cache, dict) == True:
-                        cache = dict(cache, **msg_cache)
-            return cache
+            if comm: # 是否需要通信
+                for proc in self.proc_list:
+                    proc.join()
+                cache = dict()
+                self.msg_queue.put('STOP')
+                msg_cache = None
+                while msg_cache != 'STOP':
+                    if not self.msg_queue.empty():
+                        msg_cache = self.msg_queue.get()
+                        if 'error' in msg_cache:
+                            raise Exception(unicode(msg_cache['error']))
+                        if isinstance(msg_cache, dict) == True:
+                            cache = dict(cache, **msg_cache)
+                return cache
+            else:
+                sys.stdout.flush()
 
     def stop(self):
         for proc in self.proc_list:
@@ -51,7 +54,7 @@ class CommandProcess:
         # self.pool.terminate()
         # print ('process pool terminated')
 
-def testruncmd (cmd, msg_queue):
+def testruncmd (cmd, cache = None, msg_queue = None):
     try:
         cmd = unicode(cmd)
         # print ('multiprocess start: %s' % cmd)
@@ -68,4 +71,4 @@ def testruncmd (cmd, msg_queue):
 if __name__ == '__main__':
 
     t = CommandProcess(testruncmd)
-    print (t.run([1, 'unit', 'group']))
+    print (t.run([1, 'unit', 'group'], comm = True))

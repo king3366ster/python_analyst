@@ -1,3 +1,22 @@
+## 安装部署
+### 环境安装
+#### 数据处理库环境安装
+    - pip install numpy pandas openpyxl mysql-python sqlalchemy
+#### web后台环境安装
+    - pip django channels redis asgi_redis
+#### web前端环境安装
+    - npm install
+
+### 初始化命令
+    - 测试环境初始化部署：
+        - python manage.py makemigrations app
+        - python manage.py migrate
+        - python manage.py createsuperuser / test / tt111111
+    - 测试环境运行
+        - python manage.py runserver 0.0.0.0:8000
+
+
+## 命令接口
 ### 数据源操作类
 - params
     - src 需要载入数据的源配置对象的key(mysql/mongo需要/redis)或文件地址

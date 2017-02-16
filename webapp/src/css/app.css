@@ -1,0 +1,70 @@
+@import 'leftnav.css';
+@import 'shell.css';
+@import 'userctrl.css';
+@import 'nodes.css';
+@import 'tables.css';
+@import 'charts.css';
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.app {
+  margin: 10px auto;
+  width: 1200px;
+  height: auto;
+  .m-nav-l {
+    position: relative;
+    display: inline-block;
+    width: 320px;
+    height: 540px;
+    vertical-align: top;
+    border: 1px solid #ccc;
+    scroll: auto;
+  }
+  .m-ctrl {
+    position: relative;
+    display: inline-block;
+    margin-left: 16px;
+    width: 860px;
+    height: 540px;
+    border: 1px solid #ccc;
+    scroll: auto;
+    nav {
+      a {
+        margin-left: 30px;
+      }
+      a + a {
+        margin-left: 20px;
+      }
+    }
+    .router-link-active {
+      .btn {
+        color: #337ab7;
+        border-color: #337ab7;
+        background: #ffffff;
+      }
+    }
+  }
+  .m-nodes {
+    position: relative;
+    display: block;
+    margin: 20px auto;
+    width: inherit;
+    min-height: 40px;
+    border: 1px solid #ccc;
+  }
+  .m-chartview {
+    position: relative;
+    display: block;
+    margin: 20px auto;
+    width: inherit;
+    min-height: 480px;
+    border: 1px solid #ccc;
+  }
+}
+h1 {
+  margin: 20px auto;
+  text-align: center;
+}

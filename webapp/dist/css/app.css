@@ -1,0 +1,106 @@
+.m-blackboard {
+  width: 810px;
+  height: 230px;
+  padding: 20px;
+  margin: 10px auto;
+  background-color: #000;
+  color: #fff;
+}
+
+.m-inputbar {
+  width: 810px;
+  min-height: 220px;
+  margin: 10px auto;
+  color: #000;
+  line-height: 1.4;
+}
+
+.m-inputbar textarea {
+  position: relative;
+  display: block;
+  padding: 10px;
+  width: inherit;
+  height: 180px;
+  background-color: #f0f0f0;
+}
+
+.m-inputbar .btn {
+  display: inline-block;
+  margin-top: 10px;
+  float: right;
+  vertical-align: middle;
+  margin-left: 10px;
+}
+
+.m-inputbar .info {
+  display: inline-block;
+  margin-top: 20px;
+  float: right;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.app {
+  margin: 10px auto;
+  width: 1200px;
+  height: auto;
+}
+
+.app .m-nav-l {
+  position: relative;
+  display: inline-block;
+  width: 320px;
+  height: 540px;
+  vertical-align: top;
+  border: 1px solid #ccc;
+  scroll: auto;
+}
+
+.app .m-ctrl {
+  position: relative;
+  display: inline-block;
+  margin-left: 16px;
+  width: 860px;
+  height: 540px;
+  border: 1px solid #ccc;
+  scroll: auto;
+}
+
+.app .m-ctrl nav a {
+  margin-left: 30px;
+}
+
+.app .m-ctrl nav a + a {
+  margin-left: 20px;
+}
+
+.app .m-ctrl .router-link-active .btn {
+  color: #337ab7;
+  border-color: #337ab7;
+  background: #ffffff;
+}
+
+.app .m-nodes {
+  position: relative;
+  display: block;
+  margin: 20px auto;
+  width: inherit;
+  min-height: 40px;
+  border: 1px solid #ccc;
+}
+
+.app .m-chartview {
+  position: relative;
+  display: block;
+  margin: 20px auto;
+  width: inherit;
+  min-height: 480px;
+  border: 1px solid #ccc;
+}
+h1 {
+  margin: 20px auto;
+  text-align: center;
+}

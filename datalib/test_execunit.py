@@ -21,5 +21,5 @@ if __name__ == '__main__':
         'execunit --src tu2 --tar dst2',
         'filter --src dst2 --tar dst3 --cond C != ""',
     ]
-    t.runcmds(cmds, cache, multiprocess = True)
+    t.runcmds(cmds, cache)
     print (cache['dst1'],cache['dst2'])

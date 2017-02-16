@@ -4,6 +4,7 @@ import multiprocessing
 import re, copy
 import databaseaccess.runcmd as db, datamultioperate.runcmd as dm, datasingleoperate.runcmd as ds
 from CommandProcess import CommandProcess
+from CommandThread import CommandThread
 from CommandMap import CommandMap
 
 class CommandAgent(object):
@@ -128,7 +129,7 @@ class CommandAgent(object):
             if 'tar' in cobj['ckeys']:
                 output = cobj['ckeys']['tar']
         cache = {}
-        self.runcmds(cmds, cache, multiprocess = True)
+        self.runcmds(cmds, cache, multithread = True)
         result = cache[output]
         return result
 
@@ -154,29 +155,36 @@ class CommandAgent(object):
                 cache[target] = result
                 print ('  tar: %s colums: %r' % (target, list(result.columns)))
 
-    def runcmds (self, cmds = [], cache = None, multiprocess = False):
+    def runcmds (self, cmds = [], cache = None, multithread = False, multiprocess = False):
         self.checkloop (cmds) # 检查递归深度
         # print ('itercount %d' % self.checkloop (cmds))
         if cache is None:
             raise Exception('Runtime Error: cache should not be none')
-        if multiprocess:
+        if multithread or multiprocess:
             cmdmap = self.sortcmds(cmds)
-            parallelcmds = cmdmap['parallel']
+            mthreadcmds = cmdmap['mthread']
             serialcmds = cmdmap['serial']
+            mprocesscmds = cmdmap['mprocess']
+
+            # 多线程执行
+            multithread = CommandThread(self.runthreadcmd)
             # 多进程执行
             multiproc = CommandProcess(self.runprocesscmd)
-            cache_new = multiproc.run(parallelcmds)
+
+            cache_new = multithread.run(mthreadcmds) # 用于load源数据
             cache.update(cache_new) # 内存引用更新
-            # 单进程串行
+            # 单进程/线程串行
             [self.runcmd(cmd, cache) for cmd in serialcmds]
+            multiproc.run(mprocesscmds, cache, comm = False) # 用于save结果数据，不需要数据通信
         else:
             [self.runcmd(cmd, cache) for cmd in cmds]
 
     # 多进程命令函数
-    def runprocesscmd (self, cmd, msg_queue):
+    def runprocesscmd (self, cmd, cache = None, msg_queue = None):
         try:
             # print ('multiprocess start: %s' % cmd)
-            cache = {}
+            if cache is None:
+                cache = {}
             self.runcmd(cmd, cache)
             msg_queue.put(cache)
             print ('multiprocess end: %s' % cmd)
@@ -190,11 +198,28 @@ class CommandAgent(object):
         # if curr_proc.is_alive():
         #     pid = curr_proc.pid
         #     print ('kill pid %d' % pid)
-        #     os.kill(pid, 9)        
+        #     os.kill(pid, 9)
+
+    # 多线程命令函数
+    def runthreadcmd (self, cmd, msg_queue, lock):
+        try:
+            # print ('thread start: %s' % cmd)
+            cache = {}
+            self.runcmd(cmd, cache)
+            with lock:
+                msg_queue.append(cache)
+            print ('thread end: %s' % cmd)
+        except Exception as what:
+            try:
+                print ('multithread error: %s' % unicode(what))
+                msg_queue.put({'error': what})
+            except:
+                print ('multithread error: unknown error')      
 
     # 整理命令行，提取多进程函数
     def sortcmds (self, cmds = []):
         headlist = []
+        bodylist = []
         footlist = []
         for cmd in cmds:
             cmdobj = self.parsecmd(cmd)
@@ -202,12 +227,15 @@ class CommandAgent(object):
             if ctype.find('load') == 0:
                 headlist.append(cmd)
             elif ctype == 'execunit':
+                headlist.append(cmd)
+            elif ctype.find('save') == 0:
                 footlist.append(cmd)
             else:
-                footlist.append(cmd)
+                bodylist.append(cmd)
         return {
-            'parallel': headlist,
-            'serial': footlist,
+            'mthread': headlist,
+            'serial': bodylist,
+            'mprocess': footlist,
         }
 
     # 简单处理，命令行全展开，看最大调用次数
@@ -244,5 +272,5 @@ if __name__ == '__main__':
         'group --tar dst2 --src dst1 --by A --cols B|count'
     ]
     t = CommandAgent()
-    t.runcmds(cmds, cache)
+    t.runcmds(cmds, cache, multithread = True)
     print (cache['dst1'], cache['dst2'])
