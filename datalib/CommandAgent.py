@@ -1,4 +1,4 @@
-# -*- coding:utf-8 -*- 
+# -*- coding:utf-8 -*-
 import os, sys, signal, pdb
 import multiprocessing
 import re, copy
@@ -58,7 +58,8 @@ class CommandAgent(object):
                 key = cmdline
                 val = ''
             if key != '':
-                param_map[key] = val
+                if key not in param_map: # 不覆盖策略
+                    param_map[key] = val
             return ''
         elif cmdline.find('#') == 0:
             return ''
@@ -111,7 +112,7 @@ class CommandAgent(object):
             }
 
     # 执行命令单元集合
-    def rununit (self, cmdobj):
+    def rununit (self, cmdobj, multithread = True):
         cmdkeys = cmdobj['ckeys']
         if 'src' not in cmdkeys:
             raise Exception('Command Error: execunit without src')
@@ -129,12 +130,15 @@ class CommandAgent(object):
             if 'tar' in cobj['ckeys']:
                 output = cobj['ckeys']['tar']
         cache = {}
-        self.runcmds(cmds, cache, multithread = True)
+        self.runcmds(cmds, cache, multithread = multithread)
         result = cache[output]
         return result
 
-    def runcmd (self, cmd, cache = None):
+    # hook 为执行完命令的回调
+    def runcmd (self, cmd, cache = None, hook = None):
         print (cmd)
+        if cache is None:
+            raise Exception('Runtime Error: cache should not be none')
         cmdobj = self.parsecmd(cmd)
         ctype = cmdobj['ctype']
         if ctype in CommandMap['execunit']:
@@ -148,14 +152,19 @@ class CommandAgent(object):
         elif ctype in CommandMap['multipledata']:
             result = dm.runcmd(cmdobj, cache = cache)
         else:
-            return None
+            result = None
+
         if 'tar' in cmdobj['ckeys'] and cache is not None:
             if result is not None:
                 target = cmdobj['ckeys']['tar']
                 cache[target] = result
-                print ('  tar: %s colums: %r' % (target, list(result.columns)))
+                print ('--tar: %s colums: %r' % (target, list(result.columns)))
+        if hook is not None:
+            hook(result)
+        return result
 
-    def runcmds (self, cmds = [], cache = None, multithread = False, multiprocess = False):
+    # hook 回调仅在非开启multithread有效
+    def runcmds (self, cmds = [], cache = None, multithread = False, multiprocess = False, hook = None):
         self.checkloop (cmds) # 检查递归深度
         # print ('itercount %d' % self.checkloop (cmds))
         if cache is None:
@@ -177,7 +186,7 @@ class CommandAgent(object):
             [self.runcmd(cmd, cache) for cmd in serialcmds]
             multiproc.run(mprocesscmds, cache, comm = False) # 用于save结果数据，不需要数据通信
         else:
-            [self.runcmd(cmd, cache) for cmd in cmds]
+            [self.runcmd(cmd, cache, hook) for cmd in cmds]
 
     # 多进程命令函数
     def runprocesscmd (self, cmd, cache = None, msg_queue = None):
@@ -212,9 +221,9 @@ class CommandAgent(object):
         except Exception as what:
             try:
                 print ('multithread error: %s' % unicode(what))
-                msg_queue.put({'error': what})
+                msg_queue.append({'error': what})
             except:
-                print ('multithread error: unknown error')      
+                print ('multithread error: unknown error')
 
     # 整理命令行，提取多进程函数
     def sortcmds (self, cmds = []):

@@ -7,5 +7,8 @@
 	- {	type, message, channel}
 - 参数说明：
 	- type
-		- command
-		- pulldata
+		- shell 控制台命令
+		- data 获取相应数据
+		- process 进度条
+		- cache 内存节点
+    - command 操作任务

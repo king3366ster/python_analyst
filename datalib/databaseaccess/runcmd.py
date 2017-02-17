@@ -1,4 +1,4 @@
-# -*- coding:utf-8 -*- 
+# -*- coding:utf-8 -*-
 import loaddata, savedata
 import os, sys, pdb
 
@@ -6,9 +6,9 @@ def runcmd(cmdobj, config = None, cache = None):
     ctype = cmdobj['ctype']
     result = None
     if ctype == 'loadexcel':
-        result = loaddata.loadexcel(cmdobj)
+        result = loaddata.loadexcel(cmdobj, config)
     elif ctype == 'loadcsv':
-        result = loaddata.loadcsv(cmdobj)
+        result = loaddata.loadcsv(cmdobj, config)
     elif ctype == 'loadmysql':
         result = loaddata.loadmysql(cmdobj, config)
     elif ctype == 'saveexcel':

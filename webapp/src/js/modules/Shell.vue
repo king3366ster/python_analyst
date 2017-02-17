@@ -1,7 +1,7 @@
 <template>
   <div class="m-shell">
     <div class="m-blackboard">
-
+      <li v-for="msg in shellMsgs" :class="{user: msg.from=='user', server: msg.from=='server', error: msg.from=='error'}">{{ msg.msg }}</li>
     </div>
     <div class="m-inputbar">
       <h4>命令控制台</h4>
@@ -20,17 +20,40 @@ import createSocket from 'api/socketUtil'
 
 export default {
   mounted () {
-    this.socket = createSocket()
+    this.socket = createSocket(this.msgReceived)
   },
   data () {
     return {
-      commands: ''
+      commands: '',
+      shellMsgs: [],
     }
   },
   methods: {
     async sendCommands () {
-      let res = await this.socket.sendOnce(this.commands)
-      console.log(res)
+      let sentMsgs = this.commands.split('\n').map(item => {
+        return {
+          from: 'user',
+          msg: item
+        }
+      })
+      this.shellMsgs = this.shellMsgs.concat(sentMsgs)
+      this.socket.send(this.commands)
+      // let res = await this.socket.sendOnce(this.commands)
+
+      // console.log(res)
+    },
+    msgReceived (msg) {
+      if (msg.type == 'shell') {
+        this.shellMsgs.push({
+          from: 'server',
+          msg: msg.data
+        })
+      } else if (msg.type == 'error') {
+        this.shellMsgs.push({
+          from: 'error',
+          msg: msg.data
+        })
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-# -*- coding:utf-8 -*- 
+# -*- coding:utf-8 -*-
 import os, sys, path
 sys.path.append("..")
 import re
@@ -18,7 +18,7 @@ if __name__ == '__main__':
         # 'savecsv --src msdata',
         # 'savemysql --db localdb --src excdata --tar tb_new --if_exists replace --unique A --need_datetime true',
     ]
-
+    # 可设置dbconfig的loadpath/savepath属性，设置默认文件载入、存储路径
     t = CommandAgent(dbconfig)
     t.runcmds(cmds, cache, multithread = True)
     print (cache['csvdata'], cache['msdata'])

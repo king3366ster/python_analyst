@@ -1,4 +1,4 @@
-# -*- coding:utf-8 -*- 
+# -*- coding:utf-8 -*-
 import pdb, re, datetime
 import pandas as pd
 import openpyxl
@@ -38,7 +38,7 @@ def checkdb (func):
     return _checkdb
 
 @checkparams
-def saveexcel (cmdobj, config = None, cache = None):
+def saveexcel (cmdobj, config = {}, cache = None):
     ckeys = cmdobj['ckeys']
     src = ckeys['src']
     tar = ckeys['tar']
@@ -46,6 +46,8 @@ def saveexcel (cmdobj, config = None, cache = None):
         filename = tar + '.xlsx'
     else:
         filename = tar
+    if 'savepath' in config:
+        filename = config['savepath'] + filename
 
     if 'if_exists' in ckeys:
         if_exists = ckeys['if_exists']
@@ -94,7 +96,7 @@ def saveexcel (cmdobj, config = None, cache = None):
     wb.save(filename = filename)
 
 @checkparams
-def savecsv (cmdobj, config = None, cache = None):
+def savecsv (cmdobj, config = {}, cache = None):
     ckeys = cmdobj['ckeys']
     src = ckeys['src']
     tar = ckeys['tar']
@@ -102,6 +104,8 @@ def savecsv (cmdobj, config = None, cache = None):
         filename = tar + '.csv'
     else:
         filename = tar
+    if 'savepath' in config:
+        filename = config['savepath'] + filename
     cache[src].to_csv(filename, index = False, encoding = 'gbk')
     return cache[src]
 
@@ -153,12 +157,12 @@ def create_mysql_table (mysql_engine, data, tb_name = None, unique_key_set = set
             elif re.search(r'(updated|created)', col_name):
                 temp_type = TIMESTAMP
             else:
-                temp_type = String(128) 
+                temp_type = String(128)
 
         if col_name in unique_key_set and len(unique_key_set) == 1:
-            columns.append(Column(col_name, temp_type, unique = True, nullable = False, autoincrement = False)) 
+            columns.append(Column(col_name, temp_type, unique = True, nullable = False, autoincrement = False))
         elif col_name in unique_key_set:
-            columns.append(Column(col_name, temp_type, nullable = False)) 
+            columns.append(Column(col_name, temp_type, nullable = False))
         else:
             columns.append(Column(col_name, temp_type))
 
@@ -169,12 +173,12 @@ def create_mysql_table (mysql_engine, data, tb_name = None, unique_key_set = set
 
     if need_datetime == True:
         if updated_at == False:
-            columns.append(Column('updated_at', TIMESTAMP, nullable = False, server_default = text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))) 
+            columns.append(Column('updated_at', TIMESTAMP, nullable = False, server_default = text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')))
         if created_at == False:
             columns.append(Column('created_at', TIMESTAMP, nullable = False))
     if len(unique_key_set) > 1:
         columns.append(apply(UniqueConstraint, list(unique_key_set)))
-    tb_create = apply(Table, columns)   
+    tb_create = apply(Table, columns)
     metadata.create_all(mysql_engine)
 
 @checkparams
@@ -189,7 +193,7 @@ def savemysql (cmdobj, config = None, cache = None):
     mysql_engine = gen_engine_mysql(config[db])
     DB_Session = sessionmaker(bind = mysql_engine)
     mysql_session = DB_Session()
-    
+
     if 'if_exists' in cmdkeys:
         if_exists = cmdkeys['if_exists']
     else:
@@ -259,7 +263,7 @@ def savemysql (cmdobj, config = None, cache = None):
         if value_illegal:
             print ('Runtime Error: mysql insert with unique key null, ignore')
             continue
-        
+
         if 'updated_at' not in update_value and 'updated_at' in tb_column_set:
             update_value['updated_at'] = dtime
 
@@ -301,8 +305,3 @@ def savemysql (cmdobj, config = None, cache = None):
                 except Exception as what:
                     print (unicode(what))
     mysql_session.close()
-
-
-
-
-    

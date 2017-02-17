@@ -1,10 +1,10 @@
-# -*- coding:utf-8 -*- 
-import pdb
+# -*- coding:utf-8 -*-
+import pdb, re
 import pandas as pd
 import sqlalchemy
 
 def checkparams (func):
-    def _checkparams (cmdobj, config = None):
+    def _checkparams (cmdobj, config = {}):
         ctype = cmdobj['ctype']
         if 'src' not in cmdobj['ckeys']:
             raise Exception('Command Error: %s without src' % ctype)
@@ -12,9 +12,13 @@ def checkparams (func):
     return _checkparams
 
 @checkparams
-def loadexcel (cmdobj, config = None):
+def loadexcel (cmdobj, config = {}):
     cmdkeys = cmdobj['ckeys']
     src = cmdkeys['src']
+    if 'loadpath' in config:
+        src = config['loadpath'] + src
+    if not re.search(r'\.xlsx$', src):
+        src = src + '.xlsx'
     if 'sheet' in cmdkeys:
         sheet = cmdkeys['sheet']
     else:
@@ -25,6 +29,10 @@ def loadexcel (cmdobj, config = None):
 def loadcsv (cmdobj, config = None):
     cmdkeys = cmdobj['ckeys']
     src = cmdkeys['src']
+    if 'loadpath' in config:
+        src = config['loadpath'] + src
+    if not re.search(r'\.csv$', src):
+        src = src + '.csv'
     return pd.read_csv(src, encoding = 'gbk')
 
 def gen_engine_mysql (config):
@@ -64,8 +72,3 @@ def loadmysql (cmdobj, config = None):
     mysql_engine = gen_engine_mysql(config[db])
     query = cmdkeys['query']
     return pd.read_sql(query, mysql_engine)
-
-
-
-
-    

@@ -2,6 +2,10 @@ import _ from 'lodash'
 
 class SocketUnit {
   constructor (url, hook) {
+    if (url instanceof Function) {
+      hook = url
+      url = null
+    }
     url = url || `ws://${window.location.host}/ssh/`
     this.cbMap = Object.create(null)
     this.connection = new WebSocket(url)
@@ -21,10 +25,10 @@ class SocketUnit {
       try {
         data = JSON.parse(event.data)
       } catch (err) {
-        console.err(`message error: ${err}`)
+        console.error(`message error: ${err}`)
         console.info(event.data)
       }
-      if (data.code === 200) {
+      if (data.code === 200 || data.code === 101) {
         let channel = data.channel
         if (this.cbMap[channel]) {
           this.cbMap[channel](data.data)
@@ -51,7 +55,7 @@ class SocketUnit {
       }
     })
   }
-  send (message, type = 'command', channel = -1) {
+  send (message, type = 'shell', channel = 0) {
     this.channel ++
     channel = channel || this.channel
     let msg = {

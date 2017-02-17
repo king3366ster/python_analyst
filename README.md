@@ -1,21 +1,38 @@
 ## 安装部署
 ### 环境安装
-#### 数据处理库环境安装
+- 数据处理库环境安装
     - pip install numpy pandas openpyxl mysql-python sqlalchemy
-#### web后台环境安装
+- web后台环境安装
     - pip install django channels redis asgi_redis django_redis_sessions
-#### web前端环境安装
+- web前端环境安装
     - npm install
 
 ### 初始化命令
+- 本地部署方式
     - 将main文件夹中的settings_test.py文件重命名为settings.py
     - 测试环境初始化部署：
+        - 开启redis服务 可在main文件的settings.py中做相应配置
         - python manage.py makemigrations app
         - python manage.py migrate
         - python manage.py createsuperuser / test / tt111111
     - 测试环境运行
         - python manage.py runserver 0.0.0.0:8000
+        - 访问localhost:8000  帐号：test tt111111
 
+### 目录结构
+- 数据分析引擎
+    - datalib  核心数据处理引擎
+        - databaseaccess  数据获取及输出层
+        - datamultioperate  多数据合并层
+        - datasingleoperate  单数据筛选及操作层
+        - test_*.py  测试文件
+- 独立执行脚本
+    - shell  可直接脚本执行数据分析示例
+    - testdata  直接进行脚本执行的测试数据与配置
+- 可视化web工程
+    - main  后端工程主入口及环境配置
+    - app  后端服务主目录
+    - webapp  前端工程主目录
 
 ## 命令接口
 ### 数据源操作类
@@ -31,11 +48,11 @@
 
 #### savemysql
 - examples
-    - savemysql --db localdb --src csvdata --tar tb_new --if_exists append --unique channel 
+    - savemysql --db localdb --src csvdata --tar tb_new --if_exists append --unique channel
 
 #### loadredis
 - examples
-    - loadredis --db testdb --tar dataframe --sheet hsetname 
+    - loadredis --db testdb --tar dataframe --sheet hsetname
 
 #### saveredis
 
@@ -157,7 +174,7 @@
         - sum/mean/count/std/var/min/max/top/last
         - top(N): top2 top3 top1等同于top
 - examples
-    - group --tar dest --src src1 --by cola --cols col1|sum col2|mean 
+    - group --tar dest --src src1 --by cola --cols col1|sum col2|mean
     - group --tar dest --src src1 --by col1 col2 --cols col3 col4
 
 #### resample
