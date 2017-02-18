@@ -9,24 +9,19 @@
   overflow-x: hidden;
   word-wrap: break-word;
 }
-
 .m-blackboard li {
   list-style: none;
   text-indent: -1em;
 }
-
 .m-blackboard .user {
   color: #8BFF98;
 }
-
 .m-blackboard .server {
   color: #3EFFEF;
 }
-
 .m-blackboard .error {
   color: #FFA256;
 }
-
 .m-inputbar {
   width: 810px;
   min-height: 220px;
@@ -34,7 +29,6 @@
   color: #000;
   line-height: 1.4;
 }
-
 .m-inputbar textarea {
   position: relative;
   display: block;
@@ -43,7 +37,6 @@
   height: 180px;
   background-color: #f0f0f0;
 }
-
 .m-inputbar .btn {
   display: inline-block;
   margin-top: 10px;
@@ -51,11 +44,30 @@
   vertical-align: middle;
   margin-left: 10px;
 }
-
 .m-inputbar .info {
   display: inline-block;
   margin-top: 20px;
   float: right;
+}
+.m-nodes .cache {
+  display: inline-block;
+  padding: 4px 8px;
+  vertical-align: middle;
+  font-size: 18px;
+  color: #4cae4c;
+  background-color: #fff;
+  border: 1px solid #4cae4c;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.m-nodes .cache.active {
+  background-color: #B6F9B6;
+}
+.m-nodes .cache:hover {
+  background-color: #B6F9B6;
+}
+.m-nodes .cache + .cache {
+  margin-left: 8px;
 }
 
 * {

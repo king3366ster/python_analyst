@@ -59,6 +59,7 @@ def proxy_msg(msg_channel, cache = {}):
 
         # send cache nodes
         cache_keys = list(cache.keys())
+        cache_keys = map(lambda x: {'name': x}, cache_keys)
         send_msg(
             msg_channel, 
             cache_keys, 

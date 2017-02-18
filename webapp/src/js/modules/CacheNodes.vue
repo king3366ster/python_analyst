@@ -1,14 +1,14 @@
 <template>
-  <div class="userUnit">
-    cacheNode
+  <div>
+    <span class="cache" v-for="node in cacheNodes">{{ node.name }}</span>
   </div>
 </template>
 
 <script>
 export default {
-  data () {
-    return {
-      msg: 'Info'
+  computed: {
+    cacheNodes () {
+      return this.$store.state.cacheNodes
     }
   }
 }

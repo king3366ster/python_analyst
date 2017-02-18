@@ -16,44 +16,34 @@
 </template>
 
 <script>
-import createSocket from 'api/socketUtil'
 
 export default {
-  mounted () {
-    this.socket = createSocket(this.msgReceived)
-  },
   data () {
     return {
-      commands: '',
-      shellMsgs: [],
+      shellMsg: [],
+      commands: ''
+    }
+  },
+  computed: {
+    shellMsgs () {
+      return this.$store.state.shellMsgs
     }
   },
   methods: {
-    async sendCommands () {
-      let sentMsgs = this.commands.split('\n').map(item => {
-        return {
-          from: 'user',
-          msg: item
-        }
+    sendCommands () {
+      let sentMsgs = this.commands.split('\n').forEach(item => {
+        this.$store.dispatch('pushShellMsgs', {
+          type: 'user',
+          data: item
+        })
       })
-      this.shellMsgs = this.shellMsgs.concat(sentMsgs)
-      this.socket.send(this.commands)
-      // let res = await this.socket.sendOnce(this.commands)
-
-      // console.log(res)
-    },
-    msgReceived (msg) {
-      if (msg.type == 'shell') {
-        this.shellMsgs.push({
-          from: 'server',
-          msg: msg.data
+      
+      let message = this.commands
+      this.$store.dispatch('sendMsgs', {
+          message,
+          type: 'shell'
         })
-      } else if (msg.type == 'error') {
-        this.shellMsgs.push({
-          from: 'error',
-          msg: msg.data
-        })
-      }
+      this.$store.dispatch('pushCacheCommands', message)
     }
   }
 }
