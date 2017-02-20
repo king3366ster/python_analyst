@@ -10,10 +10,12 @@
     border-radius: 4px;
     cursor: pointer;
     &.active {
-      background-color: #B6F9B6;
+      background-color: #E6F9FF;
+      border-color: #46b8da;
+      color: #46b8da;
     }
     &:hover {
-      background-color: #B6F9B6;
+      background-color: #DBFFDB;
     }
   }
   .cache + .cache {

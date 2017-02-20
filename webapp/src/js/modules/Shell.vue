@@ -37,7 +37,6 @@ export default {
           data: item
         })
       })
-      
       let message = this.commands
       this.$store.dispatch('sendMsgs', {
           message,

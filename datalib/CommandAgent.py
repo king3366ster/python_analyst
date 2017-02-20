@@ -43,7 +43,8 @@ class CommandAgent(object):
 
     def parsetext (self, cmdline, param_map = {}):
         try:
-            cmdline = cmdline.decode('utf-8', 'ignore')
+            if not isinstance(cmd, unicode):
+                cmdline = cmdline.decode('utf-8', 'ignore')
         except:
             cmdline = cmdline
         cmdline = cmdline.strip()
@@ -75,7 +76,8 @@ class CommandAgent(object):
 
     def parsecmd (self, cmd):
         try:
-            cmd = cmd.decode('utf-8', 'ignore')
+            if not isinstance(cmd, unicode):
+                cmd = cmd.decode('utf-8', 'ignore')
         except:
             cmd = cmd
         cmd = cmd.strip()

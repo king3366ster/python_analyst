@@ -41,7 +41,7 @@ def rununit (cmdobj, cmdagent, msg_channel, cache = {}, extra = {}):
     if src not in cmdagent.config['unitdata']:
         raise Exception('Runtime Error: execunit src %s has not been set' % src)
     cmds = cmdagent.config['unitdata'][src]
-    param_map = {}
+    param_map = {} # 配置文件内设置参数
     if 'params' in cmdkeys:
         param_map = parse_params(cmdkeys['params'])
     cmds = cmdagent.readcmdtext(cmds, param_map)
@@ -56,7 +56,7 @@ def rununit (cmdobj, cmdagent, msg_channel, cache = {}, extra = {}):
     for cmd in cmds:
         msg_agent.send_msg(
             msg_channel,
-            cmd,
+            'execunit: ' + cmd.replace('\"', '\\\\\"'), # 转义""
             extra = {
                 'type': 'shell',
                 'channel': extra['channel']
@@ -82,7 +82,7 @@ def rununit (cmdobj, cmdagent, msg_channel, cache = {}, extra = {}):
                 'channel': extra['channel']
             }
         )
-    cache[output] = tmp_cache[output]
+    cache[tar] = tmp_cache[output]
 
 def runcmds (cmds_text, msg_channel, cache = {}, extra = {}):
     cmdagent = CommandAgent(setting_config)
@@ -121,9 +121,10 @@ def runcmds (cmds_text, msg_channel, cache = {}, extra = {}):
                     }
                 )
     except Exception as what:
+        errmsg = 'runcmd error: %r' % what
         msg_agent.send_msg(
             msg_channel,
-            '%r' % what,
+            errmsg.replace('\"', '\\\\\"'),
             extra = {
                 'type': 'error',
                 'channel': extra['channel']

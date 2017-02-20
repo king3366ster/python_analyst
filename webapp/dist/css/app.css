@@ -1,3 +1,42 @@
+.m-presets .u-command {
+  position: relative;
+  margin: 10px 0;
+  list-style: none;
+}
+.m-presets .u-command .tag {
+  padding: 2px 4px;
+  color: #5bc0de;
+  font-size: 16px;
+  border: 1px solid #5bc0de;
+  border-radius: 4px;
+  background: #ffffff;
+  cursor: pointer;
+}
+.m-presets .u-command .detail {
+  display: none;
+}
+.m-presets .u-command .detail .param {
+  display: inline-block;
+  margin: 4px 0;
+}
+.m-presets .u-command .detail .param label, .m-presets .u-command .detail .param input {
+  display: inline-block;
+  vertical-align: middle;
+}
+.m-presets .u-command .detail .param label {
+  min-width: 60px;
+  margin: 0 4px 0 10px;
+}
+.m-presets .u-command .detail .param input {
+  max-width: 200px;
+}
+.m-presets .u-command.active .tag {
+  color: #6097C7;
+  background-color: #DEFFDE;
+}
+.m-presets .u-command.active .detail {
+  display: block;
+}
 .m-blackboard {
   width: 810px;
   height: 230px;
@@ -61,13 +100,40 @@
   cursor: pointer;
 }
 .m-nodes .cache.active {
-  background-color: #B6F9B6;
+  background-color: #E6F9FF;
+  border-color: #46b8da;
+  color: #46b8da;
 }
 .m-nodes .cache:hover {
-  background-color: #B6F9B6;
+  background-color: #DBFFDB;
 }
 .m-nodes .cache + .cache {
   margin-left: 8px;
+}
+.m-table {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+}
+.m-table h3, .m-table h4 {
+  text-align: center;
+}
+.m-table table {
+  margin: 20px auto;
+  min-width: 96%;
+  border-collapse: collapse;
+  scroll: auto;
+}
+.m-table table thead {
+  background-color: #DBFFDB;
+}
+.m-table table tr:nth-of-type(2n) {
+  background-color: #E6F9FF;
+}
+.m-table table td {
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  text-align: center;
 }
 
 * {
@@ -110,9 +176,9 @@
 }
 
 .app .m-ctrl .router-link-active .btn {
-  color: #337ab7;
-  border-color: #337ab7;
-  background: #ffffff;
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
 }
 
 .app .m-nodes {
@@ -130,6 +196,26 @@
   margin: 20px auto;
   width: inherit;
   min-height: 480px;
+  border: 1px solid #ccc;
+}
+
+.app .m-chartview .btn + .btn {
+  margin-left: 10px;
+}
+
+.app .m-chartview .m-view {
+  position: relative;
+  display: inline-block;
+  width: 1000px;
+  vertical-align: top;
+}
+
+.app .m-chartview .m-file {
+  position: relative;
+  display: inline-block;
+  width: 190px;
+  float: right;
+  vertical-align: top;
   border: 1px solid #ccc;
 }
 h1 {

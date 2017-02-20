@@ -1,0 +1,39 @@
+.m-presets .u-command {
+    position: relative;
+    margin: 10px 0;
+    list-style: none;
+}
+.m-presets .u-command .tag {
+    padding: 2px 4px;
+    color: #5bc0de;
+    font-size: 16px;
+    border: 1px solid #5bc0de;
+    border-radius: 4px;
+    background: #ffffff;
+    cursor: pointer;
+}
+.m-presets .u-command .detail {
+    display: none;
+}
+.m-presets .u-command .detail .param {
+    display: inline-block;
+    margin: 4px 0;
+}
+.m-presets .u-command .detail .param label, .m-presets .u-command .detail .param input {
+    display: inline-block;
+    vertical-align: middle;
+}
+.m-presets .u-command .detail .param label {
+    min-width: 60px;
+    margin: 0 4px 0 10px;
+}
+.m-presets .u-command .detail .param input {
+    max-width: 200px;
+}
+.m-presets .u-command.active .tag {
+    color: #6097C7;
+    background-color: #DEFFDE;
+}
+.m-presets .u-command.active .detail {
+    display: block;
+}

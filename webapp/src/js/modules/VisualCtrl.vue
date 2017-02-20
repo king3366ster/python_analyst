@@ -1,6 +1,6 @@
 <template>
   <div class="userUnit">
-    可视化让他一人同意
+    可视化控制台
   </div>
 </template>
 

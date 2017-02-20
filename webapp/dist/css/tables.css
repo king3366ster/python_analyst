@@ -1,0 +1,25 @@
+.m-table {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+}
+.m-table h3, .m-table h4 {
+  text-align: center;
+}
+.m-table table {
+  margin: 20px auto;
+  min-width: 96%;
+  border-collapse: collapse;
+  scroll: auto;
+}
+.m-table table thead {
+  background-color: #DBFFDB;
+}
+.m-table table tr:nth-of-type(2n) {
+  background-color: #E6F9FF;
+}
+.m-table table td {
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  text-align: center;
+}

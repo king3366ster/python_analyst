@@ -41,9 +41,9 @@
     }
     .router-link-active {
       .btn {
-        color: #337ab7;
-        border-color: #337ab7;
-        background: #ffffff;
+        color: #fff;
+        background-color: #5bc0de;
+        border-color: #46b8da;
       }
     }
   }
@@ -62,6 +62,23 @@
     width: inherit;
     min-height: 480px;
     border: 1px solid #ccc;
+    .btn + .btn {
+      margin-left: 10px;
+    }
+    .m-view {
+      position: relative;
+      display: inline-block;
+      width: 1000px;
+      vertical-align: top;
+    }
+    .m-file {
+      position: relative;
+      display: inline-block;
+      width: 190px;
+      float: right;
+      vertical-align: top;
+      border: 1px solid #ccc;
+    }
   }
 }
 h1 {

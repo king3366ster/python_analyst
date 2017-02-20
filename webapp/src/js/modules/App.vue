@@ -5,10 +5,10 @@
     </div><div class="m-ctrl">
       <nav class="m-nav nav nav-inline">
         <router-link to="/shell">
-          <button role="presentation" class="nav-link btn btn-info">命令行操作</button>
+          <button role="presentation" class="nav-link btn btn-default">命令行操作</button>
         </router-link>
         <router-link to="/visual">
-          <button role="presentation" class="nav-link btn btn-info">可视化操作</button>
+          <button role="presentation" class="nav-link btn btn-default">可视化操作</button>
         </router-link>
       </nav>
       <div class="m-view">

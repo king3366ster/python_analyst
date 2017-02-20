@@ -1,3 +1,6 @@
+$set start_at 2016-12-01
+$set end_at 2018-12-31
 loadexcel --src test --tar excdata
-group --src excdata   --tar dst3  --by C --cols J|top2 HIS|top G|last G|top1 G|mean C
-resample --src excdata --tar dst1  --by HIS --cols G|sum G|mean H|mean --period 3d
+filter --src excdata --tar excdata --cond (T2>"${start_at}")&(T2<"${end_at}")
+# group --src excdata   --tar dst3  --by C --cols J|top2 HIS|top G|last G|top1 G|mean C
+# resample --src excdata --tar dst1  --by HIS --cols G|sum G|mean H|mean --period 3d

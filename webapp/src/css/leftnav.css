@@ -1,0 +1,43 @@
+.m-presets {
+  .u-command {
+    position: relative;
+    margin: 10px 0;
+    list-style: none;
+    .tag {
+      padding: 2px 4px;
+      color: #5bc0de;
+      font-size: 16px;
+      border: 1px solid #5bc0de;
+      border-radius: 4px;
+      background: #ffffff;
+      cursor: pointer;
+    }
+    &.active {
+      .tag {
+        color: #6097C7;
+        background-color: #DEFFDE;
+      }
+      .detail {
+        display: block;
+      }
+    }
+    .detail {
+      display: none;
+      .param {
+        display: inline-block;
+        margin: 4px 0;
+        label, input {
+          display: inline-block;
+          vertical-align: middle;
+        }
+        label {
+          min-width: 60px;
+          margin: 0 4px 0 10px;
+        }
+        input {
+          max-width: 200px;
+        }
+      }
+    }
+  }
+}

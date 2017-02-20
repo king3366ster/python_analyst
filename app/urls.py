@@ -20,6 +20,7 @@ import app.routings as app_routings
 
 urlpatterns = [
     url(r'^$', app_views.index),
+    url(r'get_presets$', app_views.get_presets),
 ]
 
 channel_routing = [

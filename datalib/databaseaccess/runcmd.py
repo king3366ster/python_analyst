@@ -6,15 +6,15 @@ def runcmd(cmdobj, config = None, cache = None):
     ctype = cmdobj['ctype']
     result = None
     if ctype == 'loadexcel':
-        result = loaddata.loadexcel(cmdobj, config)
+        result = loaddata.loadexcel(cmdobj, config = config)
     elif ctype == 'loadcsv':
-        result = loaddata.loadcsv(cmdobj, config)
+        result = loaddata.loadcsv(cmdobj, config = config)
     elif ctype == 'loadmysql':
-        result = loaddata.loadmysql(cmdobj, config)
+        result = loaddata.loadmysql(cmdobj, config = config)
     elif ctype == 'saveexcel':
-        result = savedata.saveexcel(cmdobj, cache = cache)
+        result = savedata.saveexcel(cmdobj, config = config, cache = cache)
     elif ctype == 'savecsv':
-        result = savedata.savecsv(cmdobj, cache = cache)
+        result = savedata.savecsv(cmdobj, config = config, cache = cache)
     elif ctype == 'savemysql':
         result = savedata.savemysql(cmdobj, config = config, cache = cache)
     return result
