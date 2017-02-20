@@ -24,6 +24,12 @@ def ws_connect(msg_channel):
 @channel_session
 def ws_disconnect(msg_channel):
     user = unicode(msg_channel.channel_session['user'])
+    if user in cache:
+    	if cache[user] is not None:
+    		nodelist = [node for node in cache[user]]
+    		for node in nodelist:
+    			del cache[user][node]
+    del cache[user]
     print 'user %s disconnect' % user
 
 @channel_session

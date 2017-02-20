@@ -52,7 +52,7 @@ export default {
   changeCurrentNode (state, msg) {
     state.currentNode = msg
   },
-  pullData (state, {offset=0, limit=0}) {
+  pullData (state, {offset=0, limit=0, order=''}) {
     if (limit === 0) {
       limit = state.pageLimit
     }
@@ -60,7 +60,7 @@ export default {
     if (cacheNode) {
       store.commit('sendMsgs', {
         type: 'data',
-        message: `pulldata --src ${cacheNode} --offset ${offset} --limit ${limit}`
+        message: `pulldata --src ${cacheNode} --limit ${offset}, ${limit} ${order}`
       })
     }
   },

@@ -118,9 +118,14 @@
 .m-table h3, .m-table h4 {
   text-align: center;
 }
+.m-table .u-table {
+  margin: 0 auto;
+  width: 980px;
+  overflow-x: auto;
+}
 .m-table table {
   margin: 20px auto;
-  min-width: 96%;
+  min-width: 100%;
   border-collapse: collapse;
   scroll: auto;
 }
@@ -153,7 +158,8 @@
   width: 320px;
   height: 540px;
   vertical-align: top;
-  border: 1px solid #ccc;
+
+  /*border: 1px solid #ccc;*/
   scroll: auto;
 }
 
@@ -163,7 +169,8 @@
   margin-left: 16px;
   width: 860px;
   height: 540px;
-  border: 1px solid #ccc;
+
+  /*border: 1px solid #ccc;*/
   scroll: auto;
 }
 
@@ -187,7 +194,8 @@
   margin: 20px auto;
   width: inherit;
   min-height: 40px;
-  border: 1px solid #ccc;
+
+  /*border: 1px solid #ccc;*/
 }
 
 .app .m-chartview {
@@ -196,8 +204,9 @@
   margin: 20px auto;
   width: inherit;
   min-height: 480px;
-  border: 1px solid #ccc;
 }
+
+/*border: 1px solid #ccc;*/
 
 .app .m-chartview .btn + .btn {
   margin-left: 10px;
@@ -214,9 +223,18 @@
   position: relative;
   display: inline-block;
   width: 190px;
+  min-height: 480px;
   float: right;
   vertical-align: top;
   border: 1px solid #ccc;
+}
+
+.app .m-chartview .m-file h3, .app .m-chartview .m-file h4 {
+  text-align: center;
+}
+
+.app .m-chartview .m-file .btn {
+  margin: 2px;
 }
 h1 {
   margin: 20px auto;

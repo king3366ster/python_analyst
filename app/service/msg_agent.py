@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 import pandas, numpy
-import json, pdb
+import json, re, pdb
 import runcmds
 import multiprocessing
 from datalib.CommandAgent import CommandAgent
 from datasettings.settings import setting_config
-data_util = CommandAgent(setting_config)
 
 def checkparams (cmdobj, cache = None):
     ctype = cmdobj['ctype']
@@ -65,6 +64,8 @@ def proxy_msg(msg_channel, cache = {}):
             'channel': channel,
             'type': msg_type,
         }
+        data_util = CommandAgent(setting_config)
+
         if msg_type == 'shell':
             runcmds.runcmds(message, msg_channel, cache, extra)
 
@@ -73,20 +74,19 @@ def proxy_msg(msg_channel, cache = {}):
             if msg_obj['ctype'] == 'pulldata':
                 cmdkeys = msg_obj['ckeys']
                 checkparams(msg_obj, cache)
-                node = cache[cmdkeys['src']]
-                limit = 10
-                offset = 0
-                if 'limit' in cmdkeys:
-                    limit = int(cmdkeys['limit'])
-                if 'offset' in cmdkeys:
-                    offset = int(cmdkeys['offset'])
+                src = cmdkeys['src']
+                node = cache[src].copy(deep = True)
+                temp_cache = {
+                    src: node
+                }
                 total = len(node)
-                data = node.iloc[offset : offset + limit].fillna('')
+                message = re.sub(r'^pulldata', 'filter', message)
+                data = data_util.runcmd(message, temp_cache).fillna('')
                 for column in data:
                     if unicode(data[column].dtype).find('datetime') >= 0:
                         data[column] = data[column].astype(unicode)
                 data = data.to_json().replace('\\\"','\\\\\\\"')
-                data = '{"total":%d,"limit":%d,"offset":%d,"data":%s}' % (total, limit, offset, data)
+                data = '{"total":%d,"data":%s}' % (total, data)
             send_msg(msg_channel, data, extra = extra)
 
         elif msg_type == 'command':

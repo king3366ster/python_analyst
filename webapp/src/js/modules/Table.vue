@@ -1,7 +1,7 @@
 <template>
   <div class="m-table">
     <h3>表格数据展示 {{title}}</h3>
-    <div v-if="tableData">
+    <div class="u-table" v-if="tableData">
       <table>
         <thead>
           <tr>

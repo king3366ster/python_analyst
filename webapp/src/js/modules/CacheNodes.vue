@@ -1,6 +1,9 @@
 <template>
   <div>
+    <hr>
+    <span class="btn">已生成表格：</span>
     <span class="cache" :class="{active: currentNode==node.name}" v-for="node in cacheNodes" @click="changeCurrentNode(node.name)">{{ node.name }}</span>
+    <hr>
   </div>
 </template>
 

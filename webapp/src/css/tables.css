@@ -5,9 +5,14 @@
   h3, h4 {
     text-align: center;
   }
+  .u-table {
+    margin: 0 auto;
+    width: 980px;
+    overflow-x: auto;
+  }
   table {
     margin: 20px auto;
-    min-width: 96%;
+    min-width: 100%;
     border-collapse: collapse;
     scroll: auto;
     thead {
