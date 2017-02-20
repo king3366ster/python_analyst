@@ -12,10 +12,12 @@
     <div class="m-file">
       <h4>下载文件列表</h4>
       <div class="" v-for="file in fileLinks">
-        <span>{{file.name}}</span>
+        <a v-if="file.status=='succeed'" :href="'/static/' + file.name + '.xlsx'" target="_blank">
+          <span class="btn btn-success btn-sm">{{file.name}}</span>
+        </a>
+        <span v-else="file.status=='pending'" class="btn btn-warning btn-sm">文件生成中...</span>
+        </span>
         <!-- <span>{{file.time}}</span> -->
-        <span v-if="file.status=='succeed'"><a :href="'/static/' + file.name + '.xlsx'" target="_blank">下载</a></span>
-        <span v-else="file.status=='pending'">文件存储中...</span>
       </div>
     </div>
   </div>

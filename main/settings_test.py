@@ -95,6 +95,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'webapp/dist'),
     os.path.join(BASE_DIR, 'webapp/res'),
+    os.path.join(BASE_DIR, 'datasettings/savepath'),
 ]
 
 STATICFILES_FINDERS = (

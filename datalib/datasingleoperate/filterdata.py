@@ -163,11 +163,35 @@ def filterdata (cmdobj, cache = None):
         cond = cmdkeys['cond']
         command = parse_condition(cond, data)
         exec(command)
+    if 'sort' in cmdkeys:
+        orderby = cmdkeys['sort']
+        orderbys = orderby.split(',')
+        columns = []
+        orders = []
+        for order in orderbys:
+            order = re.split(r'\s+', order.strip())
+            if len(order) == 1:
+                keyname = order[0]
+                order = 1
+            elif len(order) >1:
+                keyname = order[0]
+                if order[1] == 1 or order[1].lower() == 'desc':
+                    order = 0
+                else:
+                    order = 1
+            else:
+                raise Exception('Command Error: sortdata without order keys')
+            if keyname not in data:
+                raise Exception('Runtime Error: sortdata %s not in data' % keyname)
+            columns.append(keyname)
+            orders.append(order)
+        if len(columns) > 0:
+            data.sort_values(by = columns, ascending = orders, inplace = True)
     if 'limit' in cmdkeys:
         limit = cmdkeys['limit'].strip()
-        if not re.match(r'^\d+(\s+\d+)*$', limit):
+        if not re.match(r'^\d+(\s*,\s*\d+)*$', limit):
             raise Exception('Command Error: filterdata limit command invalid')
-        limits = re.split(r'\s+', limit)
+        limits = re.split(r'\s*,\s*', limit)
         if len(limits) == 1:
             offset = 0
             limit = int(limits[0])
@@ -227,35 +251,35 @@ def opnulldata (cmdobj, cache = None):
             data.fillna(fillword, inplace = True)
     return data
 
-@checkparams
-def sortdata (cmdobj, cache = None):
-    cmdkeys = cmdobj['ckeys']
-    data = cache[cmdkeys['src']].copy(deep = True)
-    if 'order' in cmdkeys:
-        orderby = cmdkeys['order']
-        orderbys = orderby.split(',')
-        columns = []
-        orders = []
-        for order in orderbys:
-            order = re.split(r'\s+', order.strip())
-            if len(order) == 1:
-                keyname = order[0]
-                order = 1
-            elif len(order) >1:
-                keyname = order[0]
-                if order[1] == 1 or order[1].lower() == 'desc':
-                    order = 0
-                else:
-                    order = 1
-            else:
-                raise Exception('Command Error: sortdata without order keys')
-            if keyname not in data:
-                raise Exception('Runtime Error: sortdata %s not in data' % keyname)
-            columns.append(keyname)
-            orders.append(order)
-        if len(columns) > 0:
-            data.sort_values(by = columns, ascending = orders, inplace = True)
-    return data
+# @checkparams
+# def sortdata (cmdobj, cache = None):
+#     cmdkeys = cmdobj['ckeys']
+#     data = cache[cmdkeys['src']].copy(deep = True)
+#     if 'order' in cmdkeys:
+#         orderby = cmdkeys['order']
+#         orderbys = orderby.split(',')
+#         columns = []
+#         orders = []
+#         for order in orderbys:
+#             order = re.split(r'\s+', order.strip())
+#             if len(order) == 1:
+#                 keyname = order[0]
+#                 order = 1
+#             elif len(order) >1:
+#                 keyname = order[0]
+#                 if order[1] == 1 or order[1].lower() == 'desc':
+#                     order = 0
+#                 else:
+#                     order = 1
+#             else:
+#                 raise Exception('Command Error: sortdata without order keys')
+#             if keyname not in data:
+#                 raise Exception('Runtime Error: sortdata %s not in data' % keyname)
+#             columns.append(keyname)
+#             orders.append(order)
+#         if len(columns) > 0:
+#             data.sort_values(by = columns, ascending = orders, inplace = True)
+#     return data
 
 @checkparams
 def replacedata (cmdobj, cache = None):

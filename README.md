@@ -110,15 +110,20 @@
         - 比较操作符 & |
             - & 与操作 | 或操作
         - 优先操作符 ( )
+    - sort 排序，执行顺序晚于cond
+        - 方法使用： <列名><排序方式> 以逗号(,)分隔
+        - 排序方式：asc|desc 不填默认升序
+        - 排序优先级依命令顺序
     - cols
         - 选取特定的列 (可选)
-    - limit 获取特定行
+    - limit 获取特定行 以逗号(,)分隔
         - 一个参数时(--limit num)等同于 offset 0 limit num
-        - 两个参数时(--limit num1 num2)等同于 offset num1 limit num2
+        - 两个参数时(--limit num1, num2)等同于 offset num1 limit num2
         - 超过两个参数，只取前两个参数
 - examples
     - filter --src excdata --tar dst1 --cond (HIS<"2017-12-12") & (G!=4) & (C~="^pc")
     - filter --src excdata --tar dst1 --cond (HIS<"2017-12-12") --limit 2 4
+    - filter --src excdata --tar dst1 --sort A asc, G desc
 
 #### opcol
 * 列操作
@@ -140,14 +145,6 @@
     - setval 对空值的填充内容
 - examples
     - opnull --src excdata --tar dst2 --setval 3.2
-
-#### sort
-- params
-    - order <列名><排序方式> 以逗号(,)分隔
-    - 排序方式：asc|desc 不填默认升序
-    - 排序优先级依命令顺序
-- examples
-    - sort --src excdata --tar dst2 --order A asc, G desc
 
 #### parsejson(需要迭代器)
 * 对数据某一字段进行json解析，提取对应的keyname，生成新的column
