@@ -4,14 +4,20 @@ export default {
     // 注册事件，调用插件
     // 消息格式：
     // {	type, message, channel}
+    store.state.processStatus = 0
   },
   receiveData (state, msg) {
     if (msg.type === 'shell') {
       store.commit('pushShellMsgs', msg)
     } else if (msg.type === 'error') {
       store.commit('pushShellMsgs', msg)
+      alert(msg.data)
     } else if (msg.type === 'cache') {
       store.commit('pushCacheNodes', msg)
+    } else if (msg.type === 'process') {
+      let num = msg.data
+      num = msg.data.split('/')
+      store.state.processStatus = parseFloat(num[0])/parseFloat(num[1])
     } else if (msg.type === 'data') {
       store.commit('updateData', msg.data)
     } else if (msg.type == 'filend') {
@@ -68,14 +74,22 @@ export default {
     state.currentData = msg.data
     state.currentDataTotal = msg.total
   },
-  saveExcel (state, msg) {
+  saveFile (state, msg) {
     let source = state.currentNode
     if (source) {
       let randnum = Math.round(Date.parse(new Date()) % 10000000000 / 100)
       let target = `${source}_${randnum}`
+      let command = ''
+      if (msg === 'excel') {
+        target = `${target}.xlsx`
+        command = 'saveexcel'
+      } else if (msg === 'csv') {
+        target = `${target}.csv`
+        command = 'savecsv'
+      }
       store.commit('sendMsgs', {
         type: 'command',
-        message: `saveexcel --src ${source} --tar ${target}`
+        message: `${command} --src ${source} --tar ${target}`
       })
       state.fileLinks.push({
         name: target,

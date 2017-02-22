@@ -1,0 +1,9 @@
+$set t_ex t.xlsx
+$set t_cv t2.xlsx
+$set t_path ../testdata/
+
+loadexcel --src ${t_path}${t_ex} --tar t1
+loadexcel --src ${t_path}${t_cv} --tar t2
+
+merge --tar dst1 --src t1 t2 --join outer A B
+

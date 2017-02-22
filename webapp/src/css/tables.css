@@ -23,8 +23,15 @@
     }
     td {
       padding: 4px 6px;
+      min-width: 100px;
       border: 1px solid #ccc;
       text-align: center;
+    }
+  }
+  .my-pagination {
+    li {
+      margin: 4px;
+      vertical-align: middle;
     }
   }
 }

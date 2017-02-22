@@ -31,18 +31,7 @@ export default {
   },
   methods: {
     sendCommands () {
-      let sentMsgs = this.commands.split('\n').forEach(item => {
-        this.$store.dispatch('pushShellMsgs', {
-          type: 'user',
-          data: item
-        })
-      })
-      let message = this.commands
-      this.$store.dispatch('sendMsgs', {
-          message,
-          type: 'shell'
-        })
-      this.$store.dispatch('pushCacheCommands', message)
+      this.$store.dispatch('sendMsgs', this.commands)
     }
   }
 }

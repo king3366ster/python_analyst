@@ -1,0 +1,36 @@
+.visual-ctrl {
+  .m-nav {
+    margin: 20px 0 10px 20px;
+    .btn + .btn {
+      margin-left: 8px;
+    }
+  }
+  .m-view {
+    padding: 20px;
+    min-height: 320px;
+    border: 1px solid #ccc;
+    line-height: 1.5;
+    span, select, input {
+      display: inline-block;
+      padding: 2px 4px;
+      vertical-align: middle;
+      text-align: center;
+      font-size: 16px;
+    }
+    select {
+      min-width: 120px;
+    }
+    .btn {
+      &.active {
+        background-color: #DEFFDE;
+      }
+    }
+    .btn + .btn {
+      margin-left: 6px;
+    }
+    .target-tb-name {
+      width: 280px;
+      max-width: none;
+    }
+  }
+}

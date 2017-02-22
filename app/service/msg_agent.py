@@ -33,7 +33,10 @@ def format_msg(message, extra = {}):
         message = '"%s"' % message
 
     result = '{"code": %d, "data": %s, "type": "%s", "channel": %d}' % (channel_code, message, channel_type, channel_num)
-    result = result.decode('unicode_escape')
+    try:
+        result = result.decode('unicode_escape')
+    except:
+        pass
     return {
         'text': result
     }
@@ -91,7 +94,7 @@ def proxy_msg(msg_channel, cache = {}):
 
         elif msg_type == 'command':
             msg_obj = data_util.parsecmd(message)
-            if msg_obj['ctype'] == 'saveexcel':
+            if msg_obj['ctype'] == 'saveexcel' or msg_obj['ctype'] == 'savecsv':
                 cmdkeys = msg_obj['ckeys']
                 checkparams(msg_obj, cache)
                 src = cmdkeys['src']
@@ -116,7 +119,7 @@ def proxy_msg(msg_channel, cache = {}):
             # send_msg(msg_channel, data, extra = extra)
         # send cache nodes
         cache_keys = list(cache.keys())
-        cache_keys = map(lambda x: {'name': x}, cache_keys)
+        cache_keys = map(lambda x: {'name': x, 'columns': list(cache[x].columns)}, cache_keys)
         send_msg(
             msg_channel,
             cache_keys,

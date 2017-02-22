@@ -106,7 +106,8 @@ def savecsv (cmdobj, config = {}, cache = None):
         filename = tar
     if 'savepath' in config:
         filename = config['savepath'] + filename
-    cache[src].to_csv(filename, index = False, encoding = 'gbk')
+    tar = cache[src].replace(',', ';')
+    tar.to_csv(filename, index = False, encoding = 'gbk')
     return cache[src]
 
 def gen_engine_mysql (config):

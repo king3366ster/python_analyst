@@ -11,10 +11,10 @@ presets = [
 	},
 	{
         'name': '测试脚本2',
-		'file': 'test.data',
+		'file': 'testcsv.data',
 		'params': [
-			'start_at',
-			'end_at',
+			'数字大于',
+			'数字小于',
 		]
 	},
 ]

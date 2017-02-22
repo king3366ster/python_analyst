@@ -90,15 +90,7 @@ export default {
         params = `--params ${params}`
       }
       let message = `execunit --src ${source} --tar ${target} ${params}`
-      this.$store.dispatch('pushShellMsgs', {
-        data: message,
-        type: 'user'
-      })
-      this.$store.dispatch('sendMsgs', {
-        message,
-        type: 'shell'
-      })
-      this.$store.dispatch('pushCacheCommands', message)
+      this.$store.dispatch('sendMsgs', message)
     },
     getParams (event) {
       let target = event.target

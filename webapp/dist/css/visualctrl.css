@@ -5,20 +5,20 @@
     margin-left: 8px;
 }
 .visual-ctrl .m-view {
-    min-height: 450px;
+    padding: 20px;
+    min-height: 320px;
     border: 1px solid #ccc;
     line-height: 1.5;
 }
 .visual-ctrl .m-view span, .visual-ctrl .m-view select, .visual-ctrl .m-view input {
     display: inline-block;
     padding: 2px 4px;
-    max-width: 200px;
     vertical-align: middle;
     text-align: center;
     font-size: 16px;
 }
 .visual-ctrl .m-view select {
-    min-width: 80px;
+    min-width: 120px;
 }
 .visual-ctrl .m-view .btn {}
 .visual-ctrl .m-view .btn.active {
@@ -27,19 +27,7 @@
 .visual-ctrl .m-view .btn + .btn {
     margin-left: 6px;
 }
-.visual-ctrl .m-view .u-label {
-    margin: 10px 10px 0 20px;
-    vertical-align: middle;
-}
-.visual-ctrl .m-view p.u-line {
-    margin-left: 20px;
-}
-.visual-ctrl .m-view .u-text .u-label {
-    vertical-align: top;
-}
-.visual-ctrl .m-view .u-text textarea {
-    display: block;
-    margin-left: 30px;
-    width: 600px;
-    height: 120px;
+.visual-ctrl .m-view .target-tb-name {
+    width: 280px;
+    max-width: none;
 }

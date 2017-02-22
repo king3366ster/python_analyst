@@ -11,23 +11,15 @@ def init_execunit_fromfile ():
         if re.search(r'\.data$', file_name):
             with open('%s/%s' % (base_path, file_name)) as f:
                 content = f.read()
+                try:
+                    content = content.decode('utf-8', 'ignore')
+                except:
+                    pass
                 keyname = file_name.replace('.data', '')
                 config[keyname] = content
     return config
 # 执行单元为全局变量
 execunit_config = init_execunit_fromfile()
-
-def parse_params (params):
-    params = re.split(r'\s*,\s*', params)
-    param_map = {}
-    for param in params:
-        param = param.strip()
-        if param.find('=') > 0:
-            tmp = re.split(r'\s*=\s*', param)
-            param_map[tmp[0]] = tmp[1]
-        else:
-            param_map[param] = ''
-    return param_map
 
 # 重写执行命令单元集合
 def rununit (cmdobj, cmdagent, msg_channel, cache = {}, extra = {}):
@@ -43,7 +35,7 @@ def rununit (cmdobj, cmdagent, msg_channel, cache = {}, extra = {}):
     cmds = cmdagent.config['unitdata'][src]
     param_map = {} # 配置文件内设置参数
     if 'params' in cmdkeys:
-        param_map = parse_params(cmdkeys['params'])
+        param_map = cmdagent.parse_params(cmdkeys['params'])
     cmds = cmdagent.readcmdtext(cmds, param_map)
     output = None
     for cmd in cmds:

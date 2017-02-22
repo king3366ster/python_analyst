@@ -1,7 +1,17 @@
 export default {
   sendMsgs ({ commit, state }, message) {
+    message.split('\n').forEach(item => {
+      commit('pushShellMsgs', {
+        type: 'user',
+        data: item
+      })
+    })
+    commit('pushCacheCommands', message)
     state.channel ++
-    commit('sendMsgs', message)
+    commit('sendMsgs', {
+      message,
+      type: 'shell'
+    })
     return new Promise ((resolve, reject) => {
       let channel = state.channel
       state.cbMap[channel] = data => {
@@ -12,12 +22,6 @@ export default {
   receiveData ({ commit }, data) {
     commit('receiveData', data)
   },
-  pushCacheCommands ({ commit }, data) {
-    commit('pushCacheCommands', data)
-  },
-  pushShellMsgs ({ commit }, data) {
-    commit('pushShellMsgs', data)
-  },
   changeCurrentNode ({ commit }, data) {
     commit('changeCurrentNode', data)
   },
@@ -25,8 +29,6 @@ export default {
     commit('pullData', data)
   },
   saveFile ({ commit }, data) {
-    if (data === 'excel') {
-      commit('saveExcel', data)
-    }
+    commit('saveFile', data)
   },
 }

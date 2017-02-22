@@ -21,4 +21,11 @@
   .cache + .cache {
     margin-left: 8px;
   }
+  .process-bar {
+    width: 10px;
+    height: 3px;
+    border: none;
+    background-color: #46b8da;
+    transition: all 0.2s;
+  }
 }

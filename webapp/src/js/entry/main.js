@@ -4,17 +4,25 @@ import store from 'store'
 import App from 'modules/App'
 import Shell from 'modules/Shell'
 import VisualCtrl from 'modules/VisualCtrl'
+import Monitor from 'modules/Monitor'
 Vue.use(VueRouter)
 
 const routes = [
   {
-    name: 'datactrl',
+    path: '/',
+    component: Shell
+  },
+  {
     path: '/shell',
     component: Shell
   },
   {
     path: '/visual',
     component: VisualCtrl
+  },
+  {
+    path: '/monitor',
+    component: Monitor
   }
 ]
 

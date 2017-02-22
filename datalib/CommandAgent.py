@@ -43,7 +43,7 @@ class CommandAgent(object):
 
     def parsetext (self, cmdline, param_map = {}):
         try:
-            if not isinstance(cmd, unicode):
+            if not isinstance(cmdline, unicode):
                 cmdline = cmdline.decode('utf-8', 'ignore')
         except:
             cmdline = cmdline
@@ -113,6 +113,19 @@ class CommandAgent(object):
                 'ckeys': ckeys,
             }
 
+    # 解析 --params 参数
+    def parse_params (self, params):
+        params = re.split(r'\s*,\s*', params)
+        param_map = {}
+        for param in params:
+            param = param.strip()
+            if param.find('=') > 0:
+                tmp = re.split(r'\s*=\s*', param)
+                param_map[tmp[0]] = tmp[1]
+            else:
+                param_map[param] = ''
+        return param_map
+
     # 执行命令单元集合
     def rununit (self, cmdobj, multithread = True):
         cmdkeys = cmdobj['ckeys']
@@ -125,7 +138,10 @@ class CommandAgent(object):
         if src not in self.config['unitdata']:
             raise Exception('Runtime Error: execunit src %s has not been set' % src)
         cmds = self.config['unitdata'][src]
-        cmds = self.readcmdtext(cmds)
+        param_map = {} # 配置文件内设置参数
+        if 'params' in cmdkeys:
+            param_map = self.parse_params(cmdkeys['params'])
+        cmds = self.readcmdtext(cmds, param_map)
         output = None
         for cmd in cmds:
             cobj = self.parsecmd(cmd)
@@ -138,7 +154,7 @@ class CommandAgent(object):
 
     # hook 为执行完命令的回调
     def runcmd (self, cmd, cache = None, hook = None):
-        print (cmd)
+        print ('%r' % cmd)
         if cache is None:
             raise Exception('Runtime Error: cache should not be none')
         cmdobj = self.parsecmd(cmd)
@@ -160,7 +176,7 @@ class CommandAgent(object):
             if result is not None:
                 target = cmdobj['ckeys']['tar']
                 cache[target] = result
-                print ('--tar: %s colums: %r' % (target, list(result.columns)))
+                print ('--tar: %r colums: %r' % (target, list(result.columns)))
         if hook is not None:
             hook(result)
         return result

@@ -1,4 +1,4 @@
-# -*- coding:utf-8 -*- 
+# -*- coding:utf-8 -*-
 import re, json, pdb
 import numpy as np
 import pandas as pd
@@ -107,7 +107,7 @@ def parse_setcol_command (command, data):
                 if data[keyname].dtype == 'timedelta64[ns]':
                     operation = operation + 'data[u\'%s\'] / np.timedelta64(1, \'s\')' % keyname
                 else:
-                    operation = operation + 'data[u\'%s\']' % keyname   
+                    operation = operation + 'data[u\'%s\']' % keyname
         else:
             operation = operation + tmp_char
     return operation
@@ -187,6 +187,7 @@ def filterdata (cmdobj, cache = None):
             orders.append(order)
         if len(columns) > 0:
             data.sort_values(by = columns, ascending = orders, inplace = True)
+            data.reset_index(inplace = True, drop = True)
     if 'limit' in cmdkeys:
         limit = cmdkeys['limit'].strip()
         if not re.match(r'^\d+(\s*,\s*\d+)*$', limit):
@@ -207,7 +208,7 @@ def filterdata (cmdobj, cache = None):
                 raise Exception('Runtime Error: filter cols %s not in data' % col)
         data = data[cols]
     return data
-   
+
 @checkparams
 def opcoldata (cmdobj, cache = None):
     cmdkeys = cmdobj['ckeys']
@@ -226,7 +227,7 @@ def opcoldata (cmdobj, cache = None):
     if 'rename' in cmdkeys:
         command = cmdkeys['rename']
         command = re.sub(r'\s*\->\s*', '->', command)
-        cmds = re.split('\s+', command)
+        cmds = re.split('\s*,\s*', command)
         for cmd in cmds:
             names = re.split('\s*->\s*', cmd)
             if len(names) == 2:
@@ -344,4 +345,3 @@ def parsejsondata (cmdobj, cache = None):
         new_data = pd.DataFrame(new_series, index = data.index)
         data = pd.concat([data, new_data], axis = 1)
     return data
-                

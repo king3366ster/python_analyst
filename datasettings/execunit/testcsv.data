@@ -1,0 +1,6 @@
+$set 数字大于 0
+$set 数字小于 999
+loadexcel --src testcsv --tar excdata
+group --src excdata   --tar dst3  --by C --cols J|top2 HIS|top G|last G|top1 G|mean C
+filter --src excdata --tar excdata --cond (G>${数字大于})&(G<${数字小于})
+# resample --src excdata --tar dst1  --by HIS --cols G|sum G|mean H|mean --period 3d

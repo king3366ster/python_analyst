@@ -1,6 +1,9 @@
 @import 'leftnav.css';
 @import 'shell.css';
-@import 'userctrl.css';
+@import 'visualctrl.css';
+@import 'visualctrlfilter.css';
+@import 'visualctrlopcol.css';
+@import 'visualctrlgroup.css';
 @import 'nodes.css';
 @import 'tables.css';
 @import 'charts.css';
@@ -28,7 +31,7 @@
     display: inline-block;
     margin-left: 16px;
     width: 860px;
-    height: 540px;
+    min-height: 540px;
     /*border: 1px solid #ccc;*/
     scroll: auto;
     nav {
@@ -86,6 +89,24 @@
         margin: 2px;
       }
     }
+  }
+  .f-del, .f-add {
+    display: inline-block;
+    padding: 0 !important;
+    width: 22px;
+    height: 22px;
+    line-height: 20px;
+    text-align: center;
+    font-size: 14px !important;
+    background-color: #5cb85c;
+    color: #fff;
+    /*border: 1px solid #333;*/
+    border-radius: 20px;
+    cursor: pointer;
+
+  }
+  .f-del {
+    background-color: #e96900;
   }
 }
 h1 {

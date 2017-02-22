@@ -1,0 +1,13 @@
+.visual-ctrl-opcol span {
+    max-width: 300px;
+}
+.visual-ctrl-opcol .dst-col {
+    width: 120px;
+}
+.visual-ctrl-opcol .src-col {
+    width: 320px;
+    max-width: none;
+}
+.visual-ctrl-opcol .u-setcol {
+    margin: 10px 0;
+}

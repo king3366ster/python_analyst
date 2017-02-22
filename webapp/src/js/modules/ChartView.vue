@@ -3,6 +3,7 @@
     <div class="m-nav">
       <button class="btn" :class="{'btn-info': chartType=='table'}" @click="changeChartType('table')">表格展示</button>
       <button class="btn" :class="{'btn-info': chartType=='chart'}" @click="changeChartType('chart')">图形展示</button>
+      <button class="btn btn-success" @click="saveCsv()">生成CSV(大文件推荐)</button>
       <button class="btn btn-success" @click="saveExcel()">生成EXCEL</button>
     </div>
     <div class="m-view">
@@ -12,7 +13,7 @@
     <div class="m-file">
       <h4>下载文件列表</h4>
       <div class="" v-for="file in fileLinks">
-        <a v-if="file.status=='succeed'" :href="'/static/' + file.name + '.xlsx'" target="_blank">
+        <a v-if="file.status=='succeed'" :href="'/static/' + file.name" target="_blank">
           <span class="btn btn-success btn-sm">{{file.name}}</span>
         </a>
         <span v-else="file.status=='pending'" class="btn btn-warning btn-sm">文件生成中...</span>
@@ -44,6 +45,9 @@ export default {
     },
     saveExcel () {
       this.$store.dispatch('saveFile', 'excel')
+    },
+    saveCsv () {
+      this.$store.dispatch('saveFile', 'csv')
     }
   },
   components: {

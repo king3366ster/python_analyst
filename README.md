@@ -128,16 +128,16 @@
 #### opcol
 * 列操作
 - params
-    - setcol 设置列 如 A=B-C B=1 D->int/time/str/float
+    - setcol 设置列 如 A=B-C, B=1, D->int/time/str/float
     - dropcol 删除列
     - leftcol 剩余列
-    - rename 重命名列
+    - rename 重命名列 逗号分隔
     - 任何一条opcol命令执行顺序为 setcol -> dropcol -> leftcol -> rename 可多选少选
 - examples
     - opcol --src excdata --tar dst2 --setcol M1=A+B, HI = HIS, T3 = HIS-T2, T3->str
     - opcol --src excdata --tar dst2 --setcol HI = HIS --dropcol HIS
     - opcol --src excdata --tar dst2 --setcol HI = HIS --leftcol A HI
-    - opcol --src excdata --tar dst2 --setcol HI = HIS --dropcol HIS --leftcol A B C G --rename B -> 测试 C-> 公平
+    - opcol --src excdata --tar dst2 --setcol HI = HIS --dropcol HIS --leftcol A B C G --rename B -> 测试, C-> 公平
 
 #### opnull
 * 空值操作

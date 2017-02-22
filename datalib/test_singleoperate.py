@@ -22,7 +22,7 @@ if __name__ == '__main__':
         'filter --src excdata --tar dst2 --cond (HIS>"2016-12-12") --sort HIS desc --limit 4 , 6 --cols G HIS',
         # 'opcol --src excdata --tar dst2 --setcol M1=A+B, HI = HIS, T3 = HIS-T2, T3->str',
         # 'opcol --src excdata --tar dst2 --setcol HI = HIS, M2 = 1 --dropcol HIS --leftcol A B C G M2',
-        # 'opcol --src excdata --tar dst2 --setcol HI = HIS --dropcol HIS --leftcol A B C G --rename B -> 测试 C-> 公平',
+        # 'opcol --src excdata --tar dst2 --setcol HI = HIS --dropcol HIS --leftcol A B C G --rename B -> 测试, C-> 公平',
         # 'sort --src excdata --tar dst2 --order A asc, G desc, J',
         # 'opnull --src excdata --tar dst2 --setval 3.2',
         # 'parsejson --src excdata --tar dst2 --cols jsd.d2 jsd.dv jsd.dv.fd'

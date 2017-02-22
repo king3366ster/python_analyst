@@ -1,0 +1,20 @@
+.visual-ctrl-filter {
+  .u-label {
+    margin: 10px 10px 0 20px;
+    vertical-align: middle;
+  }
+  p.u-line {
+    margin-left: 20px;
+  }
+  .u-label {
+    vertical-align: top;
+  }
+  textarea {
+    display: block;
+    margin: 10px;
+    padding: 10px;
+    margin-left: 30px;
+    width: 600px;
+    height: 120px;
+  }
+}

@@ -12,6 +12,7 @@ export default function createSocketPlugin () {
     }
     socket.onmessage = ({data}) => {
       try {
+        data = data.replace(/\\\\\"/g, '\\\"')
         data = JSON.parse(data)
       } catch (err) {
         console.error(`message error: ${err}`)
