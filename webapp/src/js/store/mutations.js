@@ -6,6 +6,16 @@ export default {
     // {	type, message, channel}
     store.state.processStatus = 0
   },
+  cleanMsgs (state) {
+    state.shellMsgs = []
+    state.cacheCommands = []
+    state.cacheNodes = []
+    state.fileLinks = []
+    store.commit('sendMsgs', {
+      type: 'shell',
+      message: 'cleancache'
+    })
+  },
   receiveData (state, msg) {
     if (msg.type === 'shell') {
       store.commit('pushShellMsgs', msg)

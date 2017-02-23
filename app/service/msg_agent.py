@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import pandas, numpy
 import json, re, pdb
 import runcmds
@@ -70,7 +71,22 @@ def proxy_msg(msg_channel, cache = {}):
         data_util = CommandAgent(setting_config)
 
         if msg_type == 'shell':
-            runcmds.runcmds(message, msg_channel, cache, extra)
+            if message.find('cleancache') >= 0:
+                keys = list(cache.keys())
+                for key in keys:
+                    del cache[key]
+                if 'savepath' in setting_config:
+                    savepath = setting_config['savepath']
+                    for filename in os.listdir(savepath):
+                        if not isinstance(filename, unicode):
+                            filename = filename.decode('utf-8', 'ignore')
+                        filename = savepath + filename
+                        if os.path.exists(filename):
+                            os.remove(filename)
+                        send_msg(msg_channel, '%s removed' % filename, extra = extra)
+                    #     print filename
+            else:
+                runcmds.runcmds(message, msg_channel, cache, extra)
 
         elif msg_type == 'data':
             msg_obj = data_util.parsecmd(message)
@@ -115,6 +131,7 @@ def proxy_msg(msg_channel, cache = {}):
                         'type': 'filend',
                     }
                 )
+                proc.terminate()
                 return
             # send_msg(msg_channel, data, extra = extra)
         # send cache nodes

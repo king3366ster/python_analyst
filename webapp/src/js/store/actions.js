@@ -19,6 +19,9 @@ export default {
       }
     })
   },
+  cleanMsgs ({ commit }) {
+    commit('cleanMsgs')
+  },
   receiveData ({ commit }, data) {
     commit('receiveData', data)
   },

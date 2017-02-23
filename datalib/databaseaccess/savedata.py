@@ -97,6 +97,7 @@ def saveexcel (cmdobj, config = {}, cache = None):
 
 @checkparams
 def savecsv (cmdobj, config = {}, cache = None):
+    coding = 'gbk'
     ckeys = cmdobj['ckeys']
     src = ckeys['src']
     tar = ckeys['tar']
@@ -106,8 +107,30 @@ def savecsv (cmdobj, config = {}, cache = None):
         filename = tar
     if 'savepath' in config:
         filename = config['savepath'] + filename
-    tar = cache[src].replace(',', ';')
-    tar.to_csv(filename, index = False, encoding = 'gbk')
+    tar = cache[src] # .replace(',', ';')
+    # tar.to_csv(filename, index = False, encoding = 'gbk')
+    columns = list(tar.columns)
+    with open(filename, 'w') as f:
+        line = ','.join(columns)
+        f.write('%s\n' % line.encode(coding, 'ignore'))
+
+    with open(filename, 'a') as f:
+        for rows in tar.iterrows():
+            index = rows[0]
+            items = rows[1].to_dict()
+            line_list = []
+            for column in columns:
+                value = items[column]
+                if pd.isnull(value):
+                    value = ''
+                elif isinstance(value, pd.Timestamp):
+                    value = value.to_datetime()
+                    value = value.strftime('%Y-%m-%d %H:%M:%S')
+                else:
+                    value = unicode(value).replace(',', ';')
+                line_list.append(value)
+            line = ','.join(line_list)
+            f.write('%s\n' % line.encode(coding, 'ignore'))
     return cache[src]
 
 def gen_engine_mysql (config):

@@ -201,3 +201,7 @@
     - tar 处理完成后的数据输出
 - examples
     - execunit --src src1 --tar dst1
+
+### 独立命令
+#### cleancache
+* 清理下载文件及缓存
