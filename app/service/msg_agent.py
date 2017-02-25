@@ -129,11 +129,11 @@ def proxy_msg(msg_channel, cache = {}):
                 temp_cache = {
                     src: node
                 }
-                # data_util.runcmd(message, temp_cache)
-                proc = multiprocessing.Process(target = data_util.runcmd, args = (message, temp_cache))
-                proc.daemon = True
-                proc.start()
-                proc.join()
+                data_util.runcmd(message, temp_cache)
+                # proc = multiprocessing.Process(target = data_util.runcmd, args = (message, temp_cache))
+                # proc.daemon = False
+                # proc.start()
+                # proc.join()
                 send_msg(
                     msg_channel,
                     { 'target': cmdkeys['tar'] },
@@ -142,9 +142,9 @@ def proxy_msg(msg_channel, cache = {}):
                         'type': 'filend',
                     }
                 )
-                proc.terminate()
+                # proc.terminate()
                 return
-            # send_msg(msg_channel, data, extra = extra)
+
         # send cache nodes
         cache_keys = list(cache.keys())
         cache_keys = map(lambda x: {'name': x, 'columns': list(cache[x].columns)}, cache_keys)

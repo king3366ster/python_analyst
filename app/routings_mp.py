@@ -15,18 +15,27 @@ gc.set_threshold(360, 8, 8)
 lock  = multiprocessing.Lock()
 usermap = dict()
 
-# websocket channel
-# Connected to websocket.connect
-@channel_session
-@channel_session_user_from_http
-def ws_connect(msg_channel):
-    user = unicode(msg_channel.user)
-    msg_channel.channel_session['user'] = user
-    # msg_agent.send_msg(msg_channel, 'user %s connected' % user, {'code': 101})
-    # if user in cache:
-    #     del cache[user]
-    # cache[user] = {}
+def stop_process(user):
+    try:
+        if user in usermap:
+            usermap[user]['thread_stop'] = True
+            time.sleep(0.003)
+            proc = usermap[user]['process']
+            # if proc.is_alive():
+            usermap[user]['queue'].close()
+            usermap[user]['thread_queue'].close()
+            proc.terminate()
+            proc.join()
+            time.sleep(0.002)
+            del usermap[user]['queue']
+            del usermap[user]['thread_queue']
+            del usermap[user]['channels']
+            del usermap[user]
+        gc.collect() # 手动回收内存
+    except Exception as what:
+        print (what)
 
+def start_process (user):
     # 消息队列
     queue = multiprocessing.Queue()
     thread_queue = multiprocessing.Queue()
@@ -35,7 +44,8 @@ def ws_connect(msg_channel):
         'queue': queue,
         'process': None, # proc,
         'thread_queue': thread_queue,
-        'thread': None, # ssthrd,
+        'thread': None, # thrd,
+        'thread_stop': False,
         'channels': []
     }
 
@@ -51,6 +61,16 @@ def ws_connect(msg_channel):
     thrd.setDaemon(True)
     thrd.start()
 
+# websocket channel
+# Connected to websocket.connect
+@channel_session
+@channel_session_user_from_http
+def ws_connect(msg_channel):
+    user = unicode(msg_channel.user)
+    msg_channel.channel_session['user'] = user
+
+    stop_process(user)
+    start_process(user)
     print ('user %s connected' % user)
     msg_channel.reply_channel.send({
         'text': json.dumps({
@@ -66,27 +86,8 @@ def ws_connect(msg_channel):
 @channel_session
 def ws_disconnect(msg_channel):
     user = unicode(msg_channel.channel_session['user'])
-    # if user in cache:
-    # 	if cache[user] is not None:
-    # 		nodelist = [node for node in cache[user]]
-    # 		for node in nodelist:
-    # 			del cache[user][node]
-    # del cache[user]
-    if user in usermap:
-        proc = usermap[user]['process']
-        if proc.is_alive():
-            usermap[user]['queue'].close()
-            usermap[user]['thread_queue'].close()
-            proc.terminate()
-            proc.join()
-        thrd = usermap[user]['thread']
-        if thrd.is_alive():
-            thrd.stop()
-            thrd.join()
-        del usermap[user]['channels']
-        del usermap[user]
-    print 'user %s disconnect' % user
-    gc.collect() # 手动回收内存
+    stop_process(user)
+    print 'user %s disconnect' % user    
 
 @channel_session
 def ws_receive(msg_channel):
@@ -115,17 +116,18 @@ def process_event (user, queue, thread_queue):
                 'queue': thread_queue,
             }, data_cache)
         time.sleep(0.001)
+    print ('thread stoped')
 
 # 专门用于侦听进程消息发送的线程，用于消息回复
 def thread_event (user, thread_queue, channel_list):
     count = 0
-    while True:
+    while not usermap[user]['thread_stop']:
         count += 1
+        time.sleep(0.001)
         if not thread_queue.empty():
             channel_info = thread_queue.get()
             channel_id = channel_info[0]
             channel_msg = channel_info[1]
             channel = channel_list[channel_id]
             channel.reply_channel.send(channel_msg)
-        time.sleep(0.002)
 
