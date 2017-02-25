@@ -1,15 +1,27 @@
+# 命令行操作
 $set t_ex test.xlsx
 $set t_cv test.csv
-$set t_path 
 $set t_path ../testdata/
 
+# 获取源数据
 loadexcel --src ${t_path}${t_ex} --tar excdata
 loadcsv --src ${t_path}${t_cv} --tar csvdata
 # loadmysql --db localdb --tar msdata --query select * from tb_new limit 20
+
+# 合并表格
 # merge --tar dst1 --src excdata csvdata --join left A B
 merge --tar dst2 --src excdata csvdata --join inner C B
 # concat --tar dst1 --src csvdata excdata --join outer --axis 0
+
+# 解析json
+parsejson --tar dst3 --src dst2 --cols C.t1 C.t2.a
+
+# 数据聚合/重采样
 # group --src excdata   --tar dst1  --by C --cols J|top2 HIS|first G|last C
-resample --src excdata --tar dst1  --by HIS --cols G|sum H|mean --period 3d
+resample --src excdata --tar dst1  --by HIS --cols G|sum C_t2_a|mean --period 3d
+
+# 操作数据列
 opcol --src excdata --tar dst2 --setcol HI = HIS --dropcol HIS --leftcol A B C G --rename B -> 测试 C-> 公平1
+
+# 另存文件
 saveexcel --src dst2 --tar ../testdata/t.xlsx

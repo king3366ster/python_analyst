@@ -1,6 +1,6 @@
 <template>
   <div class="userUnit">
-    图表展示，推荐使用百度echarts开发
+    自动化脚本
   </div>
 </template>
 

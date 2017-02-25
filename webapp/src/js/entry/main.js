@@ -5,6 +5,7 @@ import App from 'modules/App'
 import Shell from 'modules/Shell'
 import VisualCtrl from 'modules/VisualCtrl'
 import Monitor from 'modules/Monitor'
+import Operator from 'modules/Operator'
 Vue.use(VueRouter)
 
 const routes = [
@@ -20,10 +21,14 @@ const routes = [
     path: '/visual',
     component: VisualCtrl
   },
-  {
+  { // 数据监控
     path: '/monitor',
     component: Monitor
-  }
+  },
+  { // 执行单元自动化脚本配置项
+    path: '/operator',
+    component: Operator
+  },
 ]
 
 const router = new VueRouter({

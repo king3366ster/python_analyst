@@ -8,7 +8,7 @@
       <textarea name="name" rows="8" cols="100" @keyup.ctrl.enter="sendCommands" v-model="commands"></textarea>
       <p>
         <button @click.stop="sendCommands" class="btn btn-success">发送消息</button>
-        <button class="btn btn-warning">清空消息</button>
+        <button @click.stop="cleanMessages" class="btn btn-warning">清空消息</button>
         <span class="info">按Ctrl+Enter发送消息</span>
       </p>
     </div>
@@ -32,6 +32,9 @@ export default {
   methods: {
     sendCommands () {
       this.$store.dispatch('sendMsgs', this.commands)
+    },
+    cleanMessages () {
+      this.$store.dispatch('cleanMsgs')
     }
   }
 }

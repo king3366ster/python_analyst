@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os, gc
 import pandas, numpy
 import json, re, pdb
 import runcmds
@@ -41,9 +42,20 @@ def format_msg(message, extra = {}):
         'text': result
     }
 
+# def send_msg(channel, message, extra = {}):
+#     message_sent = format_msg(message, extra)
+#     channel.reply_channel.send(message_sent)
+
 def send_msg(channel, message, extra = {}):
     message_sent = format_msg(message, extra)
-    channel.reply_channel.send(message_sent)
+    if 'queue' in channel:
+        queue = channel['queue']
+        channel_id = channel['id'] 
+        channel_msg = message_sent
+        queue.put((channel_id, channel_msg)) # 将消息扔到消息线程队列中
+    else:
+        channel = channel['channel']
+        channel.reply_channel.send(message_sent)
 
 def proxy_msg(msg_channel, cache = {}):
     content = msg_channel['text']
@@ -70,7 +82,22 @@ def proxy_msg(msg_channel, cache = {}):
         data_util = CommandAgent(setting_config)
 
         if msg_type == 'shell':
-            runcmds.runcmds(message, msg_channel, cache, extra)
+            if message.find('cleancache') >= 0:
+                keys = list(cache.keys())
+                for key in keys:
+                    del cache[key]
+                if 'savepath' in setting_config:
+                    savepath = setting_config['savepath']
+                    for filename in os.listdir(savepath):
+                        if not isinstance(filename, unicode):
+                            filename = filename.decode('utf-8', 'ignore')
+                        filename = savepath + filename
+                        if os.path.exists(filename):
+                            os.remove(filename)
+                        send_msg(msg_channel, '%s removed' % filename, extra = extra)
+                gc.collect() # 手动回收内存
+            else:
+                runcmds.runcmds(message, msg_channel, cache, extra)
 
         elif msg_type == 'data':
             msg_obj = data_util.parsecmd(message)
@@ -115,6 +142,7 @@ def proxy_msg(msg_channel, cache = {}):
                         'type': 'filend',
                     }
                 )
+                proc.terminate()
                 return
             # send_msg(msg_channel, data, extra = extra)
         # send cache nodes

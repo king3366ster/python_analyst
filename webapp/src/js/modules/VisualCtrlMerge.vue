@@ -28,6 +28,8 @@
 </template>
 
 <script>
+import _ from 'lodash'
+
 export default {
   data () {
     return {
@@ -49,22 +51,24 @@ export default {
       if (cacheNodes.length < 2) {
         return []
       }
-      let colSet1 = new Set()
-      let colSet2 = new Set()
+      let colSet1 = []
+      let colSet2 = []
       cacheNodes.forEach(item => {
         if (item.name === this.select1) {
           item.columns.forEach(column => {
-            colSet1.add(column)
+            colSet1.push(column)
           })
         }
         if (item.name === this.select2) {
           item.columns.forEach(column => {
-            colSet2.add(column)
+            colSet2.push(column)
           })
         }
       })
-      let interSet = Array.from(colSet1).filter(v => colSet2.has(v))
-      return interSet
+      // let interSet = [...colSet1].filter(v => colSet2.has(v))
+      // return interSet
+      //
+      return _.intersection(colSet1, colSet2)
     },
   },
   methods: {
@@ -96,6 +100,10 @@ export default {
       this.$forceUpdate()
     },
     updateSelect () {
+      this.joinMap = {}
+      this.joinColumns.forEach(item => {
+        this.joinMap[item] = true
+      })
       this.$forceUpdate()
     }
   }

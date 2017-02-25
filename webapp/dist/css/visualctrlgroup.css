@@ -1,0 +1,13 @@
+.visual-ctrl-group span {
+    max-width: 300px;
+}
+.visual-ctrl-group .dst-col {
+    width: 120px;
+}
+.visual-ctrl-group .src-col {
+    width: 320px;
+    max-width: none;
+}
+.visual-ctrl-group .u-setcol {
+    margin: 10px 0;
+}
