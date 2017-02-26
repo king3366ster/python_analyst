@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """investment URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -16,7 +17,10 @@ Including another URLconf
 from django.conf.urls import include, url
 from channels.routing import route
 import app.views as app_views
-import app.routings as app_routings
+# 单进程路由
+# import app.routings_sp as app_routings
+# 多进程路由
+import app.routings_mp as app_routings
 
 urlpatterns = [
     url(r'^$', app_views.index),

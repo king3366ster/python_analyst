@@ -1,0 +1,27 @@
+.m-operator {
+  width: 810px;
+  min-height: 220px;
+  margin: 10px auto;
+  color: #000;
+  line-height: 1.4;
+}
+.m-operator textarea {
+  position: relative;
+  display: block;
+  padding: 10px;
+  width: inherit;
+  height: 180px;
+  background-color: #f0f0f0;
+}
+.m-operator .btn {
+  display: inline-block;
+  margin-top: 10px;
+  float: right;
+  vertical-align: middle;
+  margin-left: 10px;
+}
+.m-operator .info {
+  display: inline-block;
+  margin-top: 20px;
+  float: right;
+}

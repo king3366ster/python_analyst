@@ -26,7 +26,7 @@
     </p>
     <p class="u-text">
       <span class="u-label btn">重采样时间维度:</span>
-      <input v-model="periodNum" value="1">
+      <input v-model="periodNum">
       <select v-model="periodType">
         <option value="M">月</option>
         <option value="D">天</option>

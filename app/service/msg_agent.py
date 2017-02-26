@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+import os, gc
 import pandas, numpy
 import json, re, pdb
 import runcmds
@@ -42,9 +42,20 @@ def format_msg(message, extra = {}):
         'text': result
     }
 
+# def send_msg(channel, message, extra = {}):
+#     message_sent = format_msg(message, extra)
+#     channel.reply_channel.send(message_sent)
+
 def send_msg(channel, message, extra = {}):
     message_sent = format_msg(message, extra)
-    channel.reply_channel.send(message_sent)
+    if 'queue' in channel:
+        queue = channel['queue']
+        channel_id = channel['id'] 
+        channel_msg = message_sent
+        queue.put((channel_id, channel_msg)) # 将消息扔到消息线程队列中
+    else:
+        channel = channel['channel']
+        channel.reply_channel.send(message_sent)
 
 def proxy_msg(msg_channel, cache = {}):
     content = msg_channel['text']
@@ -84,7 +95,7 @@ def proxy_msg(msg_channel, cache = {}):
                         if os.path.exists(filename):
                             os.remove(filename)
                         send_msg(msg_channel, '%s removed' % filename, extra = extra)
-                    #     print filename
+                gc.collect() # 手动回收内存
             else:
                 runcmds.runcmds(message, msg_channel, cache, extra)
 
@@ -118,11 +129,11 @@ def proxy_msg(msg_channel, cache = {}):
                 temp_cache = {
                     src: node
                 }
-                # data_util.runcmd(message, temp_cache)
-                proc = multiprocessing.Process(target = data_util.runcmd, args = (message, temp_cache))
-                proc.daemon = True
-                proc.start()
-                proc.join()
+                data_util.runcmd(message, temp_cache)
+                # proc = multiprocessing.Process(target = data_util.runcmd, args = (message, temp_cache))
+                # proc.daemon = False
+                # proc.start()
+                # proc.join()
                 send_msg(
                     msg_channel,
                     { 'target': cmdkeys['tar'] },
@@ -131,9 +142,9 @@ def proxy_msg(msg_channel, cache = {}):
                         'type': 'filend',
                     }
                 )
-                proc.terminate()
+                # proc.terminate()
                 return
-            # send_msg(msg_channel, data, extra = extra)
+
         # send cache nodes
         cache_keys = list(cache.keys())
         cache_keys = map(lambda x: {'name': x, 'columns': list(cache[x].columns)}, cache_keys)

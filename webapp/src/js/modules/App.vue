@@ -13,6 +13,12 @@
         <router-link to="/monitor">
           <button role="presentation" class="nav-link btn btn-default">数据监控</button>
         </router-link>
+        <router-link to="/operator">
+          <button role="presentation" class="nav-link btn btn-default">自动化脚本</button>
+        </router-link>
+        <router-link to="/uploader">
+          <button role="presentation" class="nav-link btn btn-default">上传文件分析</button>
+        </router-link>
       </nav>
       <div class="m-view">
         <router-view></router-view>
