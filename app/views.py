@@ -1,14 +1,15 @@
-# -*- coding: utf-8 -*-  
+# -*- coding: utf-8 -*-
 import os, re, json, random, pdb
 from django import forms
 from django.template import Context, Template
-from django.template.loader import get_template  
+from django.template.loader import get_template
 from django.http import HttpResponse
 from django.shortcuts import render, render_to_response
 
-from django.contrib.auth.decorators import login_required  
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from datasettings.presets import presets
+from datasettings.settings import setting_config
 
 @login_required(login_url="/adminlogin/")
 def index(request):
@@ -24,3 +25,9 @@ def get_presets (request):
 	return HttpResponse(
 		json.dumps(navlist)
 	)
+
+@csrf_exempt
+def get_loadfiles (request):
+    user = request.user
+    if 'loadpath' in setting_config:
+        loadpath = setting_config['loadpath']

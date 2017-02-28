@@ -5,12 +5,17 @@
 }
 .m-presets .u-command .tag {
     padding: 2px 4px;
-    color: #5bc0de;
-    font-size: 16px;
-    border: 1px solid #5bc0de;
+    color: #DC00F5;
+    font-size: 18px;
+    border: 1px solid #DC00F5;
     border-radius: 4px;
     background: #ffffff;
     cursor: pointer;
+}
+.m-presets .u-command .tag em {
+    margin-left: 4px;
+    font-size: 14px;
+    vertical-align: bottom;
 }
 .m-presets .u-command .detail {
     display: none;
@@ -19,7 +24,7 @@
     display: inline-block;
     margin: 4px 0;
 }
-.m-presets .u-command .detail .param label, .m-presets .u-command .detail .param input {
+.m-presets .u-command .detail .param label, .m-presets .u-command .detail .param input, .m-presets .u-command .detail .param select {
     display: inline-block;
     vertical-align: middle;
 }
@@ -27,11 +32,16 @@
     min-width: 60px;
     margin: 0 4px 0 10px;
 }
-.m-presets .u-command .detail .param input {
+.m-presets .u-command .detail .param input, .m-presets .u-command .detail .param select {
     max-width: 200px;
+}
+.m-presets .u-command .detail .param select {
+    min-width: 120px;
+    padding: 4px;
 }
 .m-presets .u-command.active .tag {
     color: #6097C7;
+    border-color: #6097C7;
     background-color: #DEFFDE;
 }
 .m-presets .u-command.active .detail {

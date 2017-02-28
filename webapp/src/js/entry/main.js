@@ -7,12 +7,13 @@ import VisualCtrl from 'modules/VisualCtrl'
 import Monitor from 'modules/Monitor'
 import Operator from 'modules/Operator'
 import Uploader from 'modules/Uploader'
+import Explain from 'modules/Explain'
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    component: Shell
+    component: VisualCtrl
   },
   {
     path: '/shell',
@@ -33,6 +34,10 @@ const routes = [
   { // 上传文件分析
     path: '/uploader',
     component: Uploader
+  },
+  { // 上传文件分析
+    path: '/explain',
+    component: Explain
   },
 ]
 

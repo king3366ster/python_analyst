@@ -126,6 +126,11 @@ def savecsv (cmdobj, config = {}, cache = None):
                 elif isinstance(value, pd.Timestamp):
                     value = value.to_datetime()
                     value = value.strftime('%Y-%m-%d %H:%M:%S')
+                elif isinstance(value, int):
+                    if value > 10**16:
+                        value = '"%d"' % value
+                    else:
+                        value = unicode(value)
                 else:
                     value = unicode(value).replace(',', ';')
                 line_list.append(value)

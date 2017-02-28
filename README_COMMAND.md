@@ -24,7 +24,7 @@
 
 #### loadexcel
 - examples
-    - loadexcel --tar dataframe --src source--sheet Sheet1
+    - loadexcel --tar dataframe --src source --sheet Sheet1
 
 #### saveexcel
 - examples
@@ -51,9 +51,11 @@
 
 #### concat
 - params
-    - join 连接方式，merge/concat分别为left/right/inner/outer，及连接的键
+    - join 连接方式，merge/concat分别为inner/outer
+    - axis 合并方向： 0 纵向合并 1 横向合并
 - examples
-    - concat --tar dest --src src1 src2 --join inner cid aid
+    - concat --tar dest --src src1 src2 --join inner --axis 0
+    - concat --tar dest --src src1 src2 --join outer --axis 1
 
 ### 单数据筛选类
 - params
@@ -82,13 +84,15 @@
         - 超过两个参数，只取前两个参数
 - examples
     - filter --src excdata --tar dst1 --cond (HIS<"2017-12-12") & (G!=4) & (C~="^pc")
-    - filter --src excdata --tar dst1 --cond (HIS<"2017-12-12") --limit 2 4
+    - filter --src excdata --tar dst1 --cond (HIS<"2017-12-12") --limit 2, 4
     - filter --src excdata --tar dst1 --sort A asc, G desc
 
 #### opcol
 * 列操作
 - params
     - setcol 设置列 如 A=B-C, B=1, D->int/time/str/float
+      - A = B+1 表示A列为B列的值加一
+      - D -> time 表示将D列转化为时间类型
     - dropcol 删除列
     - leftcol 剩余列
     - rename 重命名列 逗号分隔
@@ -141,7 +145,7 @@
     - cols <column>|<method>
         - sum/mean/count/std/min/max/top/last
         - top(N): top2 top3 top1等同于top
-    - period 采样周期
+    - period 采样周期 M 月、 D 天、 H 小时、 T 分钟、 S 秒
 - examples
     - resample --src excdata --tar dst1  --by HIS --cols G|sum H|mean --period 3d
 

@@ -12,19 +12,19 @@
         <tbody>
           <tr v-for="(item, index) in tableData.rows">
             <td>{{tableData.indexs[index]}}</td>
-            <td v-for="column in tableData.columns">{{item[column]}}</td>
+            <td v-for="column in tableData.columns">{{item[column]|formatTime}}</td>
           </tr>
         </tbody>
       </table>
-      <pager
-        :total="dataTotal"
-        :page-limit="pageLimit"
-        v-on:goto="pullData"
-      ></pager>
     </div>
     <div v-else>
       <h4>暂无数据</h4>
     </div>
+    <pager
+    :total="dataTotal"
+    :page-limit="pageLimit"
+    v-on:goto="pullData"
+    ></pager>
   </div>
 </template>
 
@@ -33,6 +33,17 @@ import pager from 'components/Pager'
 export default {
   data () {
     return {
+    }
+  },
+  filters: {
+    formatTime (value) {
+      if (Number.isInteger(value)) {
+        if (value > 1422700000000 && value < 1900105600000) {
+          let tVal = new Date(value)
+          return `${tVal.getFullYear()}-${tVal.getMonth()+1}-${tVal.getDate()} ${tVal.getHours()}:${tVal.getMinutes()}:${tVal.getSeconds()}`
+        }
+      }
+      return value
     }
   },
   computed: {

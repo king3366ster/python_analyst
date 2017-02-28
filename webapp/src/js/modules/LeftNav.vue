@@ -4,11 +4,14 @@
       <h4>系统预置数据</h4>
       <!--li :class="[u-command, {active: item.active}]" v-for="{item, index} in presets" -->
       <li class="u-command" :class="{active: item.active}" v-for="(item, index) in presets" @click="selectCommand(index)">
-        <div class="tag">{{item.target}}</div>
+        <div class="tag">{{item.target}}<em>--{{item.desc}}</em></div>
         <div class="detail">
           <span class="param" v-for="(param, param_index) in item.params">
-            <label :for="param.name">{{param.name}}</label>
-            <input :type="param.type" :name="param.name" :data-index="index" :data-param-index="param_index" @change="getParams">
+            <label :for="param.name">{{param.name}} </label>
+            <select v-if="param.type=='select'" :name="param.name" :data-index="index" :data-param-index="param_index" @change="getParams">
+              <option v-for="opt in param.option" :value="opt[1]">{{opt[0]}}</option>
+            </select>
+            <input v-else :type="param.type" :name="param.name" :data-index="index" :data-param-index="param_index" @change="getParams">
           </span>
           <button class="btn btn-success btn-sm" @click="execCommand(index)">执行</button>
         </div>
@@ -32,6 +35,7 @@ export default {
           let target = content.name
           let source = content.file.replace(/\.data$/, '')
           let params = content.params
+          let desc = content.desc
           params = params.map(item => {
             if (typeof item === 'string') {
               return {
@@ -40,10 +44,20 @@ export default {
                 value: ''
               }
             } else if (Array.isArray(item)) {
-              return {
-                name: item[0],
-                type: item[1],
-                value: ''
+              let iptType = item[1]
+              if (iptType === 'select') {
+                return {
+                  name: item[0],
+                  type: item[1],
+                  option: item[2],
+                  value: ''
+                }
+              } else {
+                return {
+                  name: item[0],
+                  type: item[1],
+                  value: ''
+                }
               }
             }
           })
@@ -51,6 +65,7 @@ export default {
             source,
             target,
             params,
+            desc,
             active: false
           })
         })

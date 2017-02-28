@@ -1,4 +1,4 @@
-# -*- coding:utf-8 -*- 
+# -*- coding:utf-8 -*-
 import re, pdb
 import pandas as pd
 
@@ -98,7 +98,7 @@ def groupdata (cmdobj, cache = None):
         try:
             series = generate_group(method, column, grouped = grouped, data = data)
         except Exception as what:
-            raise Exception('Runtime Error: dsgroup column %s cannot apply %s' % (column, method))
+            raise Exception('Runtime Error: group column %s cannot apply %s' % (column, method))
         if series is not None:
             col_data['%s_%s' % (column, method)] = series
     data_new = pd.DataFrame(col_data).reset_index()
@@ -116,7 +116,7 @@ def resampledata (cmdobj, cache = None):
     if 'period' in cmdkeys:
         period = cmdkeys['period']
     else:
-        period = 'M' # 1d 2d 
+        period = 'M' # 1d 2d
 
     colfunc_list = getcols(cmdobj, data)
     grouped = data.resample(period)

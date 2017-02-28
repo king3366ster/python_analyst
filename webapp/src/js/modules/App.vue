@@ -19,6 +19,9 @@
         <router-link to="/uploader">
           <button role="presentation" class="nav-link btn btn-default">上传文件分析</button>
         </router-link>
+        <router-link to="/explain">
+          <button role="presentation" class="nav-link btn btn-default">操作说明</button>
+        </router-link>
       </nav>
       <div class="m-view">
         <router-view></router-view>

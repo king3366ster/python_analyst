@@ -37,9 +37,16 @@
         - 命令行执行： python analyse_rawtext.py
 - 本地部署方式（开启web服务）
     - **该方式需要搭建web服务，用户可直接通过浏览器访问操作，使用成本较低**
-    - 将main文件夹中的settings_test.py文件重命名为settings.py
+    - 更改配置文件
+        - 将main文件夹中的settings_test.py文件重命名为settings.py
+            - 按需更改相应配置，可参考django开发文档
+        - 将datasettings文件夹中的settings_test.py文件重命名为settings.py
+            - 按需更改相应数据库配置
     - 测试环境初始化部署：
         - 开启redis服务 可在main文件的settings.py中做相应配置
+            - 注意django-channels库对redis的版本要求是在2.8及以上
+            - [Windows 版本Redis 下载地址](https://github.com/MSOpenTech/redis/releases)
+            - [Linux 版本Redis 下载地址](https://redis.io/download)
         - python manage.py makemigrations app
         - python manage.py migrate
         - python manage.py createsuperuser / test / tt111111
@@ -98,7 +105,11 @@
 
 ### 工程运行展示
 - ![](readme_images/界面展示1.png)
+
 - ![](readme_images/界面展示2.png)
+
 - ![](readme_images/界面展示3.png)
+
 - ![](readme_images/界面展示4.png)
+
 - ![](readme_images/界面展示5.png)

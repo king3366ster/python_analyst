@@ -5,16 +5,22 @@
     list-style: none;
     .tag {
       padding: 2px 4px;
-      color: #5bc0de;
-      font-size: 16px;
-      border: 1px solid #5bc0de;
+      color: #DC00F5;
+      font-size: 18px;
+      border: 1px solid #DC00F5;
       border-radius: 4px;
       background: #ffffff;
       cursor: pointer;
+      em {
+        margin-left: 4px;
+        font-size: 14px;
+        vertical-align: bottom;
+      }
     }
     &.active {
       .tag {
         color: #6097C7;
+        border-color: #6097C7;
         background-color: #DEFFDE;
       }
       .detail {
@@ -26,7 +32,7 @@
       .param {
         display: inline-block;
         margin: 4px 0;
-        label, input {
+        label, input, select {
           display: inline-block;
           vertical-align: middle;
         }
@@ -34,8 +40,12 @@
           min-width: 60px;
           margin: 0 4px 0 10px;
         }
-        input {
+        input, select {
           max-width: 200px;
+        }
+        select {
+          min-width: 120px;
+          padding: 4px;
         }
       }
     }
