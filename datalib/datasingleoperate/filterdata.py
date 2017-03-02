@@ -224,6 +224,20 @@ def opcoldata (cmdobj, cache = None):
         command = cmdkeys['leftcol']
         columns = re.split(r'\s+', command)
         data = data[columns]
+    if 'movecol' in cmdkeys:
+        command = cmdkeys['movecol']
+        columns = re.split(r'\s*,\s*', command)
+        for column in columns:
+            tmp_col = re.split(r'\s+', column)
+            pos = 0
+            if len(tmp_col) == 1:
+                column = tmp_col[0].strip()
+            elif len(tmp_col) > 1:
+                column = tmp_col[0].strip()
+                pos = int(tmp_col[1])
+            if len(tmp_col) > 0:
+                tmp = data.pop(column)
+                data.insert(pos, column, tmp)
     if 'rename' in cmdkeys:
         command = cmdkeys['rename']
         command = re.sub(r'\s*\->\s*', '->', command)

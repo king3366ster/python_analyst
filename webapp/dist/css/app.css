@@ -282,7 +282,7 @@
 .app .m-nav-l {
   position: relative;
   display: inline-block;
-  width: 320px;
+  width: 350px;
   height: 540px;
   vertical-align: top;
 
@@ -294,7 +294,7 @@
   position: relative;
   display: inline-block;
   margin-left: 16px;
-  width: 860px;
+  width: 830px;
   min-height: 540px;
 }
 
@@ -356,6 +356,7 @@
 
 .app .m-chartview .btn + .btn {
   margin-left: 10px;
+  margin-top: 4px;
 }
 
 .app .m-chartview .m-view {

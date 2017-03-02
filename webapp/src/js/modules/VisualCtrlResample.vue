@@ -26,7 +26,7 @@
     </p>
     <p class="u-text">
       <span class="u-label btn">重采样时间维度:</span>
-      <input v-model="periodNum">
+      <input type="number" v-model="periodNum">
       <select v-model="periodType">
         <option value="M">月</option>
         <option value="D">天</option>
@@ -55,7 +55,7 @@ export default {
       groupMap: {},
       methodList: [],
       target: '',
-      periodNum: '1',
+      periodNum: 1,
       periodType: 'M',
     }
   },

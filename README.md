@@ -14,6 +14,8 @@
 ## 安装部署
 ### 环境配置及库安装
 - 数据处理库环境安装
+    - linux 环境需对mysql做环境依赖，debian为例：
+        - apt-get install libxml2-dev libxslt1-dev python-dev libmysqlclient-dev libsqlite3-dev
     - pip install numpy pandas openpyxl mysql-python sqlalchemy
 - web后台环境安装
     - pip install django channels redis asgi_redis django_redis_sessions
@@ -51,7 +53,11 @@
         - python manage.py migrate
         - python manage.py createsuperuser / test / tt111111
     - 测试环境运行
-        - python manage.py runserver 0.0.0.0:8000
+        - 运行方法1：
+            - python manage.py runserver 0.0.0.0:8000
+        - 运行方法2：
+            - daphne main.asgi:channel_layer -b 0.0.0.0 -p 8000
+            - python manage.py runworker
         - 访问localhost:8000  帐号：test tt111111
 
 ### 数据分析引擎操作命令

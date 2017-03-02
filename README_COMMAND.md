@@ -95,13 +95,14 @@
       - D -> time 表示将D列转化为时间类型
     - dropcol 删除列
     - leftcol 剩余列
+    - movecol 移动列 逗号分隔，分别为列名和顺序序号
     - rename 重命名列 逗号分隔
-    - 任何一条opcol命令执行顺序为 setcol -> dropcol -> leftcol -> rename 可多选少选
+    - 任何一条opcol命令执行顺序为 setcol -> dropcol -> leftcol -> movecol -> rename 可多选少选
 - examples
     - opcol --src excdata --tar dst2 --setcol M1=A+B, HI = HIS, T3 = HIS-T2, T3->str
     - opcol --src excdata --tar dst2 --setcol HI = HIS --dropcol HIS
     - opcol --src excdata --tar dst2 --setcol HI = HIS --leftcol A HI
-    - opcol --src excdata --tar dst2 --setcol HI = HIS --dropcol HIS --leftcol A B C G --rename B -> 测试, C-> 公平
+    - opcol --src excdata --tar dst2 --movecol HI 1, A 3 --dropcol HIS --leftcol A B C G --rename B -> 测试, C-> 公平
 
 #### opnull
 * 空值操作
