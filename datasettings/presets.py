@@ -5,6 +5,7 @@ presets = [
         'name': '测试脚本',
         'desc': '用于测试的脚本',
 		'file': 'test.data',
+        'perm': ['productor'],
 		'params': [
 			['start_at', 'date'],
 			['end_at', 'date'],
@@ -16,6 +17,7 @@ presets = [
         'name': '测试脚本2',
         'desc': '用于测试',
 		'file': 'testcsv.data',
+        # 'perm': ['seller'],
 		'params': [
 			'数字大于',
 			'数字小于',
