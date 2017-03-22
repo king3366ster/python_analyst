@@ -54,8 +54,18 @@ def parse_condition (condition, data = {}):
     if tmp_char != '':
         tmp_char = 'data[u\'%s\']' % tmp_char
         tmp_char_pre += tmp_char
-    if tmp_char_pre.find(']~=u') > 0:
-        tmp_char_pre = tmp_char_pre.replace('~=u', '.str.contains(u') + ')'
+    
+    if tmp_char_pre.find(']==u\"\"') > 0:
+        tmp_char_a = tmp_char_pre.replace('==u\"\"', '.isnull()')
+        tmp_char_b = tmp_char_pre.replace('==u\"\"', '.apply(lambda x: unicode(x).isspace())')
+        tmp_char_pre = '((%s)|(%s))' % (tmp_char_a, tmp_char_b)
+    elif tmp_char_pre.find(']!=u\"\"') > 0:
+        tmp_char_a = tmp_char_pre.replace('!=u\"\"', '.notnull()')
+        tmp_char_b = '~' + tmp_char_pre.replace('!=u\"\"', '.apply(lambda x: unicode(x).isspace())')
+        tmp_char_pre = '((%s)|(%s))' % (tmp_char_a, tmp_char_b)
+    elif re.search(r']\s*~=\s*u', tmp_char_pre):
+        tmp_char_pre = re.sub(r'~=\s*u', '.str.contains(u', tmp_char_pre)
+        tmp_char_pre += ')'
     return 'data=data[%s]' % tmp_char_pre
 
 def parse_setcol_command (command, data):
