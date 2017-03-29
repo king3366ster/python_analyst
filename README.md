@@ -71,7 +71,32 @@
         6. savecsv --src 目标数据表 --tar 输出文件.csv
     - 详细命令行使用参见[数据分析引擎命令接口](README_COMMAND.md)
 
-### 自定义开发-目录结构
+## 自定义开发
+### 常用配置选项
+- 命令行脚本模式
+    - 命令行脚本模式适用于诸如linux服务器定时任务或者临时任务，如crontab定时发邮件、数据库同步与迁移等
+        - 详细操作参见[数据分析命令行接口](shell/README.md)
+- WEB 服务模式
+    - 数据库及参数配置：
+        - 配置文件地址： datasettings/settings.py
+        - 配置方法参见[数据分析WEB接口](datasettings/README.md)
+    - WEB操作界面选项配置：
+        - 数据执行脚本文件：datasettings/execunit/**.data
+            - 自定义参数语法：
+                - 文件头设置 $set key val
+                - 命令行中使用 ${key}，解析器会自动用val替换${key}
+                - 替换方式如C语言中的 #define key val 的用法
+            - 命令行语法参见 [数据分析引擎命令接口](README_COMMAND.md)
+        - 界面选项配置： datasettings/presets.py
+            - 配置文件为json形式，参数如下：
+                - name: 选择数据的名称
+                - desc：数据描述
+                - file：用于数据分析的数据脚本名称，固定目录在datasettings/execunit
+                - perm: 该数据可供应的权限，不填则为全部拥有权限
+                - params: 选择数据的可选参数，与*.data文件配套使用
+                - params: 格式为数组，第一项为参数名，第二项为参数类型，用于前端的input[type]，第三项为补充参数类型，如select框的选择，至少填一项
+
+### 二次开发-目录结构
 - 数据分析引擎
     - datalib  核心数据处理引擎
         - databaseaccess  数据获取及输出层

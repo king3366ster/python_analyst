@@ -14,11 +14,11 @@
 - examples
     - savemysql --db localdb --src csvdata --tar tb_new --if_exists append --unique channel
 
-#### loadmongo
+#### loadmongo （未完成）
 - examples
     - loadmongo --db testdb --tar dataframe --query db.query.find()
 
-#### savemongo
+#### savemongo （未完成）
 - examples
     - savemongo --db testdb --src dataframe --tar db_tb
 

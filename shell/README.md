@@ -25,4 +25,12 @@
     - 从内存中查看对应数据
     	- print (cache['dst1'])
 
+### 发送邮件的执行方式
+- 编辑 settings.py文件，填写对应的db配置、输入命令行所在文件夹路径、输入excel/csv文件所在文件夹（如果有）
+- 编辑命令行脚本，如 test.data
+- 编辑libemail.py，主要为配置邮件服务器账号密码等
+- 编辑analyse_email.py，主要为配置邮件发送人
+- 操作命令行: python analyse_email.py -f <filename>
+    - example: python analyse_email.py -f test.data
+
 ** 命令行的所有数据文本需用utf-8编码 ** 
