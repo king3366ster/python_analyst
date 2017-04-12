@@ -54,18 +54,18 @@ def parse_condition (condition, data = {}):
     if tmp_char != '':
         tmp_char = 'data[u\'%s\']' % tmp_char
         tmp_char_pre += tmp_char
-    
-    if tmp_char_pre.find(']==u\"\"') > 0:
-        tmp_char_a = tmp_char_pre.replace('==u\"\"', '.isnull()')
-        tmp_char_b = tmp_char_pre.replace('==u\"\"', '.apply(lambda x: unicode(x).isspace())')
+    elif re.search(r']\s*==\s*u\"\"', tmp_char_pre):
+        tmp_char_a = re.sub(r'\s*==\s*u\"\"', '.isnull()', tmp_char_pre)
+        tmp_char_b = re.sub(r'\s*==\s*u\"\"', '.apply(lambda x: unicode(x).isspace())', tmp_char_pre)
         tmp_char_pre = '((%s)|(%s))' % (tmp_char_a, tmp_char_b)
-    elif tmp_char_pre.find(']!=u\"\"') > 0:
-        tmp_char_a = tmp_char_pre.replace('!=u\"\"', '.notnull()')
-        tmp_char_b = '~' + tmp_char_pre.replace('!=u\"\"', '.apply(lambda x: unicode(x).isspace())')
+    elif re.search(r']\s*!=\s*u\"\"', tmp_char_pre):
+        tmp_char_a = re.sub(r'\s*!=\s*u\"\"', '.notnull()', tmp_char_pre)
+        tmp_char_b = '~' + re.sub(r'\s*!=\s*u\"\"', '.apply(lambda x: unicode(x).isspace())', tmp_char_pre)
         tmp_char_pre = '((%s)|(%s))' % (tmp_char_a, tmp_char_b)
     elif re.search(r']\s*~=\s*u', tmp_char_pre):
         tmp_char_pre = re.sub(r'~=\s*u', '.str.contains(u', tmp_char_pre)
         tmp_char_pre += ')'
+    print tmp_char_pre
     return 'data=data[%s]' % tmp_char_pre
 
 def parse_setcol_command (command, data):
@@ -353,11 +353,20 @@ def parsejsondata (cmdobj, cache = None):
                 column = jsoncmd[1]
                 try:
                     json_dict = json.loads(item[column])
+                    # json_dict 属性循环迭代
                     for tmpkey in jsoncmd[2:]:
                         if json_dict is None:
                             break
-                        if tmpkey in json_dict:
-                            json_dict = json_dict[tmpkey]
+                        if isinstance(json_dict, dict):
+                            if tmpkey in json_dict:
+                                json_dict = json_dict[tmpkey]
+                            else:
+                                json_dict = None
+                        elif isinstance(json_dict, list) and re.match(r'^\s*\d+\s*$', tmpkey):
+                            if int(tmpkey) < len(json_dict):
+                                json_dict = json_dict[int(tmpkey)]
+                            else:
+                                json_dict = None
                         else:
                             json_dict = None
                     if isinstance(json_dict, dict):
