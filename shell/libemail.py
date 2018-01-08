@@ -26,7 +26,7 @@ def send_mail(to_list, sub, content):
         return False  
 
 if __name__ == '__main__':
-    mailto_list=['hzchensheng15@corp.netease.com']
+    mailto_list=['***@corp.netease.com']
     if send_mail(mailto_list,"hello","hello world！"):  
         print "发送成功"  
     else:  
