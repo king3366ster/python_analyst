@@ -22,10 +22,5 @@ if __name__ == '__main__':
     t.runcmds(cmds, cache = cache)
     data = (cache['result'].to_html())
     mailto_list = [
-        'hzchensheng15@corp.netease.com',
-        # 'hzliujun3@corp.netease.com',
-        'hzquehangning@corp.netease.com',
-        'hzhudan@corp.netease.com',
-        'ddwang@corp.netease.com',
     ]
     print (send_mail(mailto_list, '数据统计', data))
