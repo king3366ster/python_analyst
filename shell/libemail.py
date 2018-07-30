@@ -2,11 +2,10 @@
 
 import smtplib  
 from email.mime.text import MIMEText  
-# mailto_list=['hzchensheng15@corp.netease.com'] 
-mail_host="service.netease.com"  #设置服务器
-mail_user="staff.yunxin"    #用户名
+mail_host="******.netease.com"  #设置服务器
+mail_user="******"    #用户名
 mail_pass="******"   #口令 
-mail_postfix="service.netease.com"  #发件箱的后缀
+mail_postfix="******.netease.com"  #发件箱的后缀
   
 def send_mail(to_list, sub, content):  
     me="<"+mail_user+"@"+mail_postfix+">"  
