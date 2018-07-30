@@ -19,6 +19,7 @@
     - pip install numpy pandas openpyxl mysql-python sqlalchemy
 - web后台环境安装
     - pip install django channels redis asgi_redis django_redis_sessions
+    - channels 2.* 版本不再支持python2，如需使用python2，则需安装channels 1.* 的版本
 - web前端环境安装
     - npm install
     - npm run dev
