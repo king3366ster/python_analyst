@@ -2,6 +2,7 @@
 import pdb, re
 import pandas as pd
 import sqlalchemy
+import pymysql
 
 def checkparams (func):
     def _checkparams (cmdobj, config = {}):
@@ -56,9 +57,10 @@ def gen_engine_mysql (config):
         _port = config['port']
     else:
         _port = 3306
-    mysql_engine = 'mysql://%s:%s@%s:%s/%s?charset=utf8' % (_user, _pwd, _host, _port, _db)
+    # mysql_engine = 'mysql://%s:%s@%s:%s/%s?charset=utf8' % (_user, _pwd, _host, _port, _db)
     # print (mysql_engine)
-    return sqlalchemy.create_engine(mysql_engine)
+    return pymysql.connect(host=_host, port=_port, user=_user, password=_pwd, db=_db, charset='utf8')
+    # return sqlalchemy.create_engine(mysql_engine)
 
 def loadmysql (cmdobj, config = None):
     cmdkeys = cmdobj['ckeys']
